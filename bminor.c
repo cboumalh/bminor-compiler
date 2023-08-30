@@ -32,5 +32,8 @@ int main(int argc, char *argv[]){
 
     int run_status = run(input_file_name, flags);
 
+    if(input_file_name)
+        free(input_file_name);
+
     return run_status;
 }
