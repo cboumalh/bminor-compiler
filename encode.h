@@ -5,6 +5,7 @@
 
 //macros
 #define NUMBER_CODES 12
+#define BUFSIZE 256
 
 //flags
 enum Flags {

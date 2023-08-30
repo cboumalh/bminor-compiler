@@ -35,7 +35,7 @@ int string_decode(const char *es, char *s){
                     hex[2] = '\0';
                     char c = (char)strtol(hex, NULL, 16);
 
-                    if(c < 32 && c > 136) return 0;
+                    if(c < 32 && c > 126) return 0;
 
                     s[s_counter] = c;
                     i += 4; // skip hex sequence
@@ -59,9 +59,9 @@ int string_decode(const char *es, char *s){
             printf("Double quote in the middle of the string\n");
             return 0;
         }
-        else if(es[i] >= 32 && es[i] <= 136) s[s_counter] = es[i]; // valid ascii between 32 and 136 inclusive
+        else if(es[i] >= 32 && es[i] <= 126) s[s_counter] = es[i]; // valid ascii between 32 and 126 inclusive
         else {
-            printf("Not ASCII character between 32 and 136 inclusive\n");
+            printf("Not ASCII character between 32 and 126 inclusive\n");
             return 0;
         }
         s_counter++;
@@ -73,7 +73,7 @@ int string_decode(const char *es, char *s){
 }
 
 int string_encode(const char *s, char *es){
-    char *encoded_str = (char *)malloc(256 * sizeof(char));
+    char *encoded_str = (char *)malloc(BUFSIZE * sizeof(char));
 
     if(!encoded_str){
         perror("Malloc failed");  
@@ -116,11 +116,11 @@ int string_encode(const char *s, char *es){
 }
 
 int encode(FILE *file){
-    char buffer[256];
+    char buffer[BUFSIZE];
     char *output_encoded_str = NULL;
     if (fgets(buffer, sizeof(buffer), file) != NULL) {
         char *input_encoded_str = buffer;
-        output_encoded_str = (char *) malloc(256 * sizeof(char));
+        output_encoded_str = (char *) malloc(BUFSIZE * sizeof(char));
 
         if(!output_encoded_str){
             perror("Malloc failed");  
