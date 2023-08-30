@@ -12,7 +12,6 @@ void usage(){
 }
 
 int backslash_count_back(const char *es, int end){
-    size_t str_len = strlen(es);
     int backslash_count = 0;
 
     while(end >= 0 && es[end] == '\\') {
