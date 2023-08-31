@@ -19,7 +19,5 @@ int backslash_count_back(const char *es, int end){
         end--;
     }
 
-    if(backslash_count % 2) return 1;
-
-    return 0;  
+    return backslash_count % 2;
 }
