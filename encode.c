@@ -35,7 +35,7 @@ int string_decode(const char *es, char *s){
                     hex[2] = '\0';
                     char c = (char)strtol(hex, NULL, 16);
 
-                    if(c < 32 && c > 126) return 0;
+                    if(c < 32 || c > 126) return 0;
 
                     s[s_counter] = c;
                     i += 4; // skip hex sequence
