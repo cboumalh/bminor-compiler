@@ -1,0 +1,618 @@
+=====STUDENT TESTS=====
+====Good Tests====
+===[good-0.bminor Input]===
+"Polite valid bminor"
+===[good-0.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-0.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Polite valid bminor"
+Decoded str: Polite valid bminor
+
+
+
+
+===[good-1.bminor Input]===
+"bana\\t\"nas"
+===[good-1.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-1.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "bana\\t\"nas"
+Decoded str: bana\t"nas
+
+
+
+
+===[good-2.bminor Input]===
+"Chris\'s compilers assignment"
+===[good-2.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-2.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Chris\'s compilers assignment"
+Decoded str: Chris's compilers assignment
+
+
+
+
+===[good-3.bminor Input]===
+"We \n\n\" are on a rollllll"
+===[good-3.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-3.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "We \n\n\" are on a rollllll"
+Decoded str: We 
+
+" are on a rollllll
+
+
+
+
+===[good-4.bminor Input]===
+"BMINOR FOR \\n LIFE"
+===[good-4.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-4.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "BMINOR FOR \\n LIFE"
+Decoded str: BMINOR FOR \n LIFE
+
+
+
+
+===[good-5.bminor Input]===
+"\n"
+===[good-5.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-5.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "\n"
+Decoded str: 
+
+
+
+
+
+===[good-6.bminor Input]===
+"Hello\n"
+===[good-6.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-6.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Hello\n"
+Decoded str: Hello
+
+
+
+
+
+===[good-7.bminor Input]===
+"esape from \r\r\r\\\\\""
+===[good-7.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-7.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "esape from \r\r\r\\\\\""
+Decoded str: esape from 
+
+
+\\"
+
+
+
+
+===[good-8.bminor Input]===
+"double quote gang \" single quote gang \'"
+===[good-8.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-8.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "double quote gang \" single quote gang \'"
+Decoded str: double quote gang " single quote gang '
+
+
+
+
+===[good-9.bminor Input]===
+"the finale: \n\t\r\v ...etc"
+===[good-9.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good-9.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "the finale: \n\t\r\v ...etc"
+Decoded str: the finale: 
+	
+ ...etc
+
+
+
+
+====Bad Tests====
+===[bad-0.bminor Input]===
+this is not valid
+===[bad-0.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-0.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: this is not valid
+
+
+
+
+===[bad-1.bminor Input]===
+"hello\\\"
+===[bad-1.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-1.bminor Output]===
+Odd number of double backslashes starting from the back of string
+Error decoding string: "hello\\\"
+
+
+
+
+===[bad-2.bminor Input]===
+"BAD terrible string
+===[bad-2.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-2.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: "BAD terrible string
+
+
+
+
+===[bad-3.bminor Input]===
+here we go again"
+===[bad-3.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-3.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: here we go again"
+
+
+
+
+===[bad-4.bminor Input]===
+"Why is there a double quote " oops there it is we didn't escape it"
+===[bad-4.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-4.bminor Output]===
+Double quote in the middle of the string
+Error decoding string: "Why is there a double quote " oops there it is we didn't escape it"
+
+
+
+
+===[bad-5.bminor Input]===
+"\\\"
+===[bad-5.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-5.bminor Output]===
+Odd number of double backslashes starting from the back of string
+Error decoding string: "\\\"
+
+
+
+
+===[bad-6.bminor Input]===
+"Test number \6 \zad will pass"
+===[bad-6.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-6.bminor Output]===
+Invalid escape character
+Error decoding string: "Test number \6 \zad will pass"
+
+
+
+
+===[bad-7.bminor Input]===
+"We should have continued the hex here: \0xf, but we did not!"
+===[bad-7.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-7.bminor Output]===
+Hex format incorrect to decode
+Error decoding string: "We should have continued the hex here: \0xf, but we did not!"
+
+
+
+
+===[bad-8.bminor Input]===
+"\kd is not an escape code"
+===[bad-8.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-8.bminor Output]===
+Invalid escape character
+Error decoding string: "\kd is not an escape code"
+
+
+
+
+===[bad-9.bminor Input]===
+"This \\\j will also fail"
+===[bad-9.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad-9.bminor Output]===
+Invalid escape character
+Error decoding string: "This \\\j will also fail"
+
+
+
+
+=====HIDDEN TESTS=====
+====Good Tests====
+===[good1.bminor Input]===
+"Whan that Aprill with his shoures soote"
+===[good1.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good1.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Whan that Aprill with his shoures soote"
+Decoded str: Whan that Aprill with his shoures soote
+
+
+
+
+===[good10.bminor Input]===
+"That slepen al the nyght with open ye\n(So priketh hem Nature in hir corages),\nThanne longen folk to goon on pilgrimages,\nAnd palmeres for to seken straunge strondes,\n To ferne halwes, kowthe in sondry londes;\t And specially from every shires ende."
+===[good10.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good10.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "That slepen al the nyght with open ye\n(So priketh hem Nature in hir corages),\nThanne longen folk to goon on pilgrimages,\nAnd palmeres for to seken straunge strondes,\n To ferne halwes, kowthe in sondry londes;\t And specially from every shires ende."
+Decoded str: That slepen al the nyght with open ye
+(So priketh hem Nature in hir corages),
+Thanne longen folk to goon on pilgrimages,
+And palmeres for to seken straunge strondes,
+ To ferne halwes, kowthe in sondry londes;	 And specially from every shires ende.
+
+
+
+
+===[good3.bminor Input]===
+"And bathed  \bevery veyne in swich licour"
+===[good3.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good3.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "And bathed  \bevery veyne in swich licour"
+Decoded str: And bathed  every veyne in swich licour
+
+
+
+
+===[good4.bminor Input]===
+"Of which vertu engendred is the flour\e"
+===[good4.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good4.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Of which vertu engendred is the flour\e"
+Decoded str: Of which vertu engendred is the flour
+
+
+
+
+===[good5.bminor Input]===
+"\fWhan Zephirus eek with his sweete breeth"
+===[good5.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good5.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "\fWhan Zephirus eek with his sweete breeth"
+Decoded str: Whan Zephirus eek with his sweete breeth
+
+
+
+
+===[good6.bminor Input]===
+"Inspired hath in \nevery\nholt\nand\nheeth\rheeth"
+===[good6.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good6.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Inspired hath in \nevery\nholt\nand\nheeth\rheeth"
+Decoded str: Inspired hath in 
+every
+holt
+and
+heeth
+heeth
+
+
+
+
+===[good7.bminor Input]===
+"The tendre croppes, \t and the yonge sonne"
+===[good7.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good7.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "The tendre croppes, \t and the yonge sonne"
+Decoded str: The tendre croppes, 	 and the yonge sonne
+
+
+
+
+===[good8.bminor Input]===
+"Hath in the Ram his half \\ \'cours\' yronne,"
+===[good8.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good8.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "Hath in the Ram his half \\ \'cours\' yronne,"
+Decoded str: Hath in the Ram his half \ 'cours' yronne,
+
+
+
+
+===[good9.bminor Input]===
+"And smale \"foweles\" maken melodye,\v"
+===[good9.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[good9.bminor Output]===
+Encode Decode Process Successful!
+Encoded str: "And smale \"foweles\" maken melodye,\v"
+Decoded str: And smale "foweles" maken melodye,
+
+
+
+
+===[good2.bminor Input]===
+"The droghte \a of March hath per\0x5Ed to \0x22 the roote\n"
+===[good2.bminor Status]===
+return code: 1
+TEST NOT PASSED
+
+===[good2.bminor Output]===
+New encoded string different than original encoded
+Error decoding string: "The droghte \a of March hath per\0x5Ed to \0x22 the roote\n"
+
+
+
+
+====Bad Tests====
+===[bad1.bminor Input]===
+Bifil that seson on a day
+===[bad1.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad1.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: Bifil that seson on a day
+
+
+
+
+===[bad4.bminor Input]===
+"To Caunterbury with ful devout corage \c \d \g \h \i \j \k \l \m \o \p \q \s \u \w \x \y \z"
+===[bad4.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad4.bminor Output]===
+Invalid escape character
+Error decoding string: "To Caunterbury with ful devout corage \c \d \g \h \i \j \k \l \m \o \p \q \s \u \w \x \y \z"
+
+
+
+
+===[bad5.bminor Input]===
+"At nyght was come "into that hostelrye"
+===[bad5.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad5.bminor Output]===
+Double quote in the middle of the string
+Error decoding string: "At nyght was come "into that hostelrye"
+
+
+
+
+===[bad6.bminor Input]===
+"Wel nyne and twenty \~in a compaignye"
+===[bad6.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad6.bminor Output]===
+Invalid escape character
+Error decoding string: "Wel nyne and twenty \~in a compaignye"
+
+
+
+
+===[bad7.bminor Input]===
+"Of sondry folk, by aventure yfalle" \n\n
+===[bad7.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad7.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: "Of sondry folk, by aventure yfalle" \n\n
+
+
+
+
+===[bad8.bminor Input]===
+\n "In felaweshipe, and pilgrimes were they alle,"
+===[bad8.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad8.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: \n "In felaweshipe, and pilgrimes were they alle,"
+
+
+
+
+===[bad9.bminor Input]===
+"That toward Caunterbuty \" wolden "" ryde."
+===[bad9.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad9.bminor Output]===
+Double quote in the middle of the string
+Error decoding string: "That toward Caunterbuty \" wolden "" ryde."
+
+
+
+
+===[bad2.bminor Input]===
+"In \0xfg Southwerk at the tabard as I lay"
+===[bad2.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad2.bminor Output]===
+Hex format incorrect to decode
+Error decoding string: "In \0xfg Southwerk at the tabard as I lay"
+
+
+
+
+===[bad3.bminor Input]===
+"
+===[bad3.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad3.bminor Output]===
+Error decoding string: "
+
+
+
+
+===[bad10.bminor Input]===
+"The chambres and the stables weren wyde, And wel we weren esed atte beste. And shortly, whan the sonne was to reste, So hadde I spoken with hem everichon That I was of hir felaweshipe anon, And made forward erly for to ryse, To take oure wey ther as I yow devyse. This is over 255 bytes"
+===[bad10.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[bad10.bminor Output]===
+String not surrounded by double quotes
+Error decoding string: "The chambres and the stables weren wyde, And wel we weren esed atte beste. And shortly, whan the sonne was to reste, So hadde I spoken with hem everichon That I was of hir felaweshipe anon, And made forward erly for to ryse, To take oure wey ther as I yo
+
+
+
+
+===== SUMMARIZED ENCODER RESULTS =====
+{
+  "student_tests": {
+    "Good": {
+      "correct": 10,
+      "incorrect": 0
+    },
+    "Bad": {
+      "correct": 10,
+      "incorrect": 0
+    }
+  },
+  "hidden_tests": {
+    "Good": {
+      "correct": 9,
+      "incorrect": 1
+    },
+    "Bad": {
+      "correct": 10,
+      "incorrect": 0
+    }
+  }
+}
+Encoder Project Grade
+---------------------------------
+
+GitHub Usage (1/2 points)
+----------------------------------------------
+Release was tagged as 'encode', please be sure to exactly match the specified tag (-1)
+
+Makefile (5/5 points)
+----------------------------------------------
+Works well!
+
+Return Code (8/8 points)
+----------------------------------------------
+Excellent work here
+
+General Structure (15/15 points)
+----------------------------------------------
+Program structure is solid.
+
+Student Tests (20/20 points)
+------------------------------------------
+Test cases well exercise edge cases and valid instances
+
+Hidden Tests (19/20 points)
+------------------------------------------
+Looks like a small error because of matching the input and output before and after the decoding/encoding. (-1)
+
+Coding Style (10/10 points)
+------------------------------------------
+The codes and ascii_chars arrays were very slick ways of converting to and from escape codes. Looks really clean and well done!
+
+Total (78/80 Points)
+------------------------------------------
