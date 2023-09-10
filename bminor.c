@@ -1,16 +1,17 @@
 //libraries
 #include "encode.h"
-
+#include "lex.yy.c"
 
 int main(int argc, char *argv[]){
 
     int arg_counter = 1;
     char *input_file_name = NULL;
     unsigned int flags = 0;
+    int run_status = EXIT_FAILURE;
 
     if(argc < 2){
         usage();
-        return EXIT_FAILURE;
+        return run_status;
     }
 
     while(arg_counter < argc){
@@ -21,6 +22,9 @@ int main(int argc, char *argv[]){
             if(!strcmp(flag_no_dashes, "encode")){
                 flags |= ENCODE_FLAG;
             }
+            if(!strcmp(flag_no_dashes, "scan")){
+                flags |= SCAN_FLAG;
+            }
         }
         //input file
         else{
@@ -30,7 +34,28 @@ int main(int argc, char *argv[]){
         arg_counter++;
     }
 
-    int run_status = run(input_file_name, flags);
+    if(input_file_name == NULL){
+        printf("No file name passed as argument\n");
+        return run_status;
+    }
+
+    FILE *file;
+    file = fopen(input_file_name, "r");
+
+    if (!file) {
+        perror("Error opening the file");
+        return run_status;
+    }
+
+    if(flags & ENCODE_FLAG) run_status = encode(file);
+    if(flags & SCAN_FLAG) {
+        yyin = file;
+        int token;
+        while((token = yylex()) != 0);
+    }
+
+
+    fclose(file);
 
     if(input_file_name)
         free(input_file_name);

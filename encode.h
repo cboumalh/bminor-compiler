@@ -10,7 +10,6 @@
 //prototypes
 int string_decode( const char *, char * );
 int string_encode( const char *, char * );
-int run(const char*, unsigned int);
 int encode(FILE *);
 
 #endif

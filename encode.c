@@ -147,27 +147,3 @@ int encode(FILE *file){
         return EXIT_FAILURE;
     }
 }
-
-int run(const char* file_name, unsigned int flags){
-    int run_status = EXIT_FAILURE;
-
-    if(file_name == NULL){
-        printf("No file name passed as argument\n");
-        return run_status;
-    }
-
-    FILE *file;
-    file = fopen(file_name, "r");
-
-    if (!file) {
-        perror("Error opening the file");
-        return run_status;
-    }
-
-    if(flags & ENCODE_FLAG) run_status = encode(file);
-
-
-    fclose(file);
-
-    return run_status;
-}
