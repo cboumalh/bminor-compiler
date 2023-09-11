@@ -1,0 +1,5 @@
+//test some boolean types
+boolean = true;
+boolean = false;
+bool = 5 > 4;
+

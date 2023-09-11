@@ -1,0 +1,8 @@
+// basic data types
+
+
+character:	 	char = 'c';
+character: char = '\n';
+character = '\e'
+character = '\t'
+

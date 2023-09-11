@@ -1,0 +1,10 @@
+// strings
+string = "";
+
+string = "we can write an escaped backslash \\";
+" \"this is a unique test case \" ";
+" \n \t "
+"\e \r \v"
+string = "single qoute ' or \' ";
+string = " double qoute \" ";
+
