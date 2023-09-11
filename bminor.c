@@ -1,6 +1,6 @@
 //libraries
 #include "encode.h"
-#include "lex.yy.c"
+#include "scan.h"
 
 int main(int argc, char *argv[]){
 
@@ -48,11 +48,7 @@ int main(int argc, char *argv[]){
     }
 
     if(flags & ENCODE_FLAG) run_status = encode(file);
-    if(flags & SCAN_FLAG) {
-        yyin = file;
-        int token;
-        while((token = yylex()) != 0);
-    }
+    if(flags & SCAN_FLAG) run_status = scan(file);
 
 
     fclose(file);

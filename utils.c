@@ -21,3 +21,13 @@ int backslash_count_back(const char *es, int end){
 
     return backslash_count % 2;
 }
+
+void toUpperCase(const char *input, char *output) {
+    size_t len = strlen(input);
+    
+    for (size_t i = 0; i < len; i++) {
+        output[i] = toupper(input[i]);
+    }
+    
+    output[len] = '\0'; // Null-terminate the output string
+}
