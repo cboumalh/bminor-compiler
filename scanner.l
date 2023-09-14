@@ -5,6 +5,7 @@
 #include "encode.h"
 #include "utils.h"
 #include <math.h>
+#define MAXIDSZ 256
 
 int processIdMatch(const char* text) {
   char keywords[][20] = {"array","auto","boolean","char","else","false","float","for","function","if","integer","print","return","string","true","void","while"};
@@ -93,8 +94,11 @@ error         .
 }
 
 {IdOrKeyword} {
+  if(strlen(yytext) > MAXIDSZ){
+    printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN], yytext);
+    return ERROR_TOKEN;
+  }
   int token = processIdMatch(yytext);
-
   if(token == ID_TOKEN)
     printf("%s %s\n", TokenNames[token], yytext);
   else{
@@ -217,8 +221,7 @@ error         .
 }
 
 {validstr} {
-  int MAX_SZ = 1000;
-  char *output_encoded_str = (char *)malloc(MAX_SZ * sizeof(char));
+  char *output_encoded_str = (char *)malloc(BUFSIZ * sizeof(char));
   if(string_decode(yytext, output_encoded_str)){
     printf("%s %s\n", TokenNames[STRING_TOKEN], output_encoded_str);
     free(output_encoded_str);
