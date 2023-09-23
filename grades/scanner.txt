@@ -1,0 +1,2161 @@
+=====STUDENT TESTS=====
+====Good Tests====
+===[STUDENT TESTS/good1.bminor Input]===
+// just runs all basic tokens
+//
+/* comment */
+array 
+boolean 
+char 
+else 
+false 
+for 
+function 
+if 
+integer 
+print 
+return 
+string 
+true
+void
+while
+:
+;
+,
+[
+]
+{
+}
+(
+)
+=
+^
++
+-
+++
+--
+*
+/
+%
+==
+>=
+<=
+<
+>
+!=
+a
+ab
+ab3
+ab3a
+12314
+1
+12
+123
+'A'
+""
+"a"
+"aa"
+
+===[STUDENT TESTS/good1.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good1.bminor Output]===
+CPPCOMMENT_TOKEN
+CPPCOMMENT_TOKEN
+CCOMMENT_TOKEN
+ARRAY
+BOOLEAN
+CHAR
+ELSE
+FALSE
+FOR
+FUNCTION
+IF
+INTEGER
+PRINT
+RETURN
+STRING
+TRUE
+VOID
+WHILE
+COLON_TOKEN
+SEMICOLON_TOKEN
+COMMA_TOKEN
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+OPEN_CURLY_TOKEN
+CLOSE_CURLY_TOKEN
+OPEN_PARAN_TOKEN
+CLOSE_PARAN_TOKEN
+ASSIGN_TOKEN
+POWER_TOKEN
+ADDITION_TOKEN
+SUBTRACTION_TOKEN
+INCREMENT_TOKEN
+DECREMENT_TOKEN
+MULTIPLY_TOKEN
+DIVISION_TOKEN
+MODULO_TOKEN
+ASSERT_EQ_TOKEN
+GREATER_OR_EQ_TOKEN
+LESS_OR_EQ_TOKEN
+LESS_TOKEN
+GREATER_TOKEN
+NOT_EQUAL_TOKEN
+ID_TOKEN a
+ID_TOKEN ab
+ID_TOKEN ab3
+ID_TOKEN ab3a
+INT_TOKEN 12314
+INT_TOKEN 1
+INT_TOKEN 12
+INT_TOKEN 123
+CHAR_TOKEN A
+STRING_TOKEN 
+STRING_TOKEN a
+STRING_TOKEN aa
+
+
+
+
+===[STUDENT TESTS/good10.bminor Input]===
+/* tests some more constructs in bminor */
+z = -x; // unary negation
+x^2; //exponantiotion
+//simple test cases
+x ^ 2
+z != x % 2
+z = 5 + 6;
+z = 5 * 6;
+z = 5 - 6;
+z = 5 / 6;
+q++;
+z--;
+z = 7 + 7 - z;
+
+
+===[STUDENT TESTS/good10.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good10.bminor Output]===
+CCOMMENT_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+SUBTRACTION_TOKEN
+ID_TOKEN x
+SEMICOLON_TOKEN
+CPPCOMMENT_TOKEN
+ID_TOKEN x
+POWER_TOKEN
+INT_TOKEN 2
+SEMICOLON_TOKEN
+CPPCOMMENT_TOKEN
+CPPCOMMENT_TOKEN
+ID_TOKEN x
+POWER_TOKEN
+INT_TOKEN 2
+ID_TOKEN z
+NOT_EQUAL_TOKEN
+ID_TOKEN x
+MODULO_TOKEN
+INT_TOKEN 2
+ID_TOKEN z
+ASSIGN_TOKEN
+INT_TOKEN 5
+ADDITION_TOKEN
+INT_TOKEN 6
+SEMICOLON_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+INT_TOKEN 5
+MULTIPLY_TOKEN
+INT_TOKEN 6
+SEMICOLON_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+INT_TOKEN 5
+SUBTRACTION_TOKEN
+INT_TOKEN 6
+SEMICOLON_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+INT_TOKEN 5
+DIVISION_TOKEN
+INT_TOKEN 6
+SEMICOLON_TOKEN
+ID_TOKEN q
+INCREMENT_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN z
+DECREMENT_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+INT_TOKEN 7
+ADDITION_TOKEN
+INT_TOKEN 7
+SUBTRACTION_TOKEN
+ID_TOKEN z
+SEMICOLON_TOKEN
+
+
+
+
+===[STUDENT TESTS/good2.bminor Input]===
+// basic data types
+number: integer;
+number = 56;
+number = -56;
+number = +56;
+number = 0005006;
+number = +0005006;
+number = -000050006;
+
+
+
+
+
+
+
+
+
+===[STUDENT TESTS/good2.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good2.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN number
+COLON_TOKEN
+INTEGER
+SEMICOLON_TOKEN
+ID_TOKEN number
+ASSIGN_TOKEN
+INT_TOKEN 56
+SEMICOLON_TOKEN
+ID_TOKEN number
+ASSIGN_TOKEN
+INT_TOKEN -56
+SEMICOLON_TOKEN
+ID_TOKEN number
+ASSIGN_TOKEN
+INT_TOKEN 56
+SEMICOLON_TOKEN
+ID_TOKEN number
+ASSIGN_TOKEN
+INT_TOKEN 5006
+SEMICOLON_TOKEN
+ID_TOKEN number
+ASSIGN_TOKEN
+INT_TOKEN 5006
+SEMICOLON_TOKEN
+ID_TOKEN number
+ASSIGN_TOKEN
+INT_TOKEN -50006
+SEMICOLON_TOKEN
+
+
+
+
+===[STUDENT TESTS/good3.bminor Input]===
+//test some boolean types
+boolean = true;
+boolean = false;
+bool = 5 > 4;
+
+
+===[STUDENT TESTS/good3.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good3.bminor Output]===
+CPPCOMMENT_TOKEN
+BOOLEAN
+ASSIGN_TOKEN
+TRUE
+SEMICOLON_TOKEN
+BOOLEAN
+ASSIGN_TOKEN
+FALSE
+SEMICOLON_TOKEN
+ID_TOKEN bool
+ASSIGN_TOKEN
+INT_TOKEN 5
+GREATER_TOKEN
+INT_TOKEN 4
+SEMICOLON_TOKEN
+
+
+
+
+===[STUDENT TESTS/good4.bminor Input]===
+// basic data types
+
+
+character:	 	char = 'c';
+character: char = '\n';
+character = '\e'
+character = '\t'
+
+
+===[STUDENT TESTS/good4.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good4.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN character
+COLON_TOKEN
+CHAR
+ASSIGN_TOKEN
+CHAR_TOKEN c
+SEMICOLON_TOKEN
+ID_TOKEN character
+COLON_TOKEN
+CHAR
+ASSIGN_TOKEN
+CHAR_TOKEN 
+
+SEMICOLON_TOKEN
+ID_TOKEN character
+ASSIGN_TOKEN
+CHAR_TOKEN 
+ID_TOKEN character
+ASSIGN_TOKEN
+CHAR_TOKEN 	
+
+
+
+
+===[STUDENT TESTS/good5.bminor Input]===
+"This is a string"
+"Notre \n Dame"
+" "
+" string with numbers 3213"
+"String with @@ works in the program"
+""
+
+===[STUDENT TESTS/good5.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good5.bminor Output]===
+STRING_TOKEN This is a string
+STRING_TOKEN Notre 
+ Dame
+STRING_TOKEN  
+STRING_TOKEN  string with numbers 3213
+STRING_TOKEN String with @@ works in the program
+STRING_TOKEN 
+
+
+
+
+===[STUDENT TESTS/good6.bminor Input]===
+// strings
+string = "";
+
+string = "we can write an escaped backslash \\";
+" \"this is a unique test case \" ";
+" \n \t "
+"\e \r \v"
+string = "single qoute ' or \' ";
+string = " double qoute \" ";
+
+
+===[STUDENT TESTS/good6.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good6.bminor Output]===
+CPPCOMMENT_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN 
+SEMICOLON_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN we can write an escaped backslash \
+SEMICOLON_TOKEN
+STRING_TOKEN  "this is a unique test case " 
+SEMICOLON_TOKEN
+STRING_TOKEN  
+ 	 
+STRING_TOKEN  
+ 
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN single qoute ' or ' 
+SEMICOLON_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN  double qoute " 
+SEMICOLON_TOKEN
+
+
+
+
+===[STUDENT TESTS/good7.bminor Input]===
+// strings
+string = "";
+
+string = "hello this is a string!";
+string = "hello this is \a a string!";
+
+string = "11234567891123456789112345678911234567891123456789112345678911234567891123456789112345678911234567891123456789112345678911234567891123456789112345678911234567"// less then 160 characters 
+
+
+
+===[STUDENT TESTS/good7.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good7.bminor Output]===
+CPPCOMMENT_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN 
+SEMICOLON_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN hello this is a string!
+SEMICOLON_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN hello this is  a string!
+SEMICOLON_TOKEN
+STRING
+ASSIGN_TOKEN
+STRING_TOKEN 11234567891123456789112345678911234567891123456789112345678911234567891123456789112345678911234567891123456789112345678911234567891123456789112345678911234567
+CPPCOMMENT_TOKEN
+
+
+
+
+===[STUDENT TESTS/good8.bminor Input]===
+//test arrays
+f:array [5]integer = { 1, 2, 3, 4, 5};
+f:array[5]char = {'a', 'b', 'c', 'd', 'e'};
+f:array[5] boolean = {false, false, true, true, true};
+f:array [] 	string = {"this", "i", "s", "a,", "test", "."};
+
+===[STUDENT TESTS/good8.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good8.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN f
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+INT_TOKEN 5
+CLOSE_BRACK_TOKEN
+INTEGER
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+INT_TOKEN 1
+COMMA_TOKEN
+INT_TOKEN 2
+COMMA_TOKEN
+INT_TOKEN 3
+COMMA_TOKEN
+INT_TOKEN 4
+COMMA_TOKEN
+INT_TOKEN 5
+CLOSE_CURLY_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN f
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+INT_TOKEN 5
+CLOSE_BRACK_TOKEN
+CHAR
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+CHAR_TOKEN a
+COMMA_TOKEN
+CHAR_TOKEN b
+COMMA_TOKEN
+CHAR_TOKEN c
+COMMA_TOKEN
+CHAR_TOKEN d
+COMMA_TOKEN
+CHAR_TOKEN e
+CLOSE_CURLY_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN f
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+INT_TOKEN 5
+CLOSE_BRACK_TOKEN
+BOOLEAN
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+FALSE
+COMMA_TOKEN
+FALSE
+COMMA_TOKEN
+TRUE
+COMMA_TOKEN
+TRUE
+COMMA_TOKEN
+TRUE
+CLOSE_CURLY_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN f
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+STRING
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+STRING_TOKEN this
+COMMA_TOKEN
+STRING_TOKEN i
+COMMA_TOKEN
+STRING_TOKEN s
+COMMA_TOKEN
+STRING_TOKEN a,
+COMMA_TOKEN
+STRING_TOKEN test
+COMMA_TOKEN
+STRING_TOKEN .
+CLOSE_CURLY_TOKEN
+SEMICOLON_TOKEN
+
+
+
+
+===[STUDENT TESTS/good9.bminor Input]===
+// test comparotors and boolean logic
+if ( a >= 5 )
+{
+	print "a >= 5";
+}
+if( a > 5 )
+{
+	print "a > 5";
+}
+if( a <= 5 )
+{
+	print "a <= 5";
+}
+if( a < 5 )
+{
+	print "a < 5";
+}
+if( a == 5 )
+{
+	print "a == 5";
+}
+if( a != 5 )
+{
+	print "a != 5";
+}
+a = 5; // test assigment
+if (a || b)
+{
+	print " a || b is true";
+}
+if (a && b)
+{
+	print " a && b is true";
+}
+
+===[STUDENT TESTS/good9.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[STUDENT TESTS/good9.bminor Output]===
+CPPCOMMENT_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+GREATER_OR_EQ_TOKEN
+INT_TOKEN 5
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN a >= 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+GREATER_TOKEN
+INT_TOKEN 5
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN a > 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+LESS_OR_EQ_TOKEN
+INT_TOKEN 5
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN a <= 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+LESS_TOKEN
+INT_TOKEN 5
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN a < 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+ASSERT_EQ_TOKEN
+INT_TOKEN 5
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN a == 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+NOT_EQUAL_TOKEN
+INT_TOKEN 5
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN a != 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+ID_TOKEN a
+ASSIGN_TOKEN
+INT_TOKEN 5
+SEMICOLON_TOKEN
+CPPCOMMENT_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+OR_TOKEN
+ID_TOKEN b
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN  a || b is true
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+AND_TOKEN
+ID_TOKEN b
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN  a && b is true
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+
+
+
+
+====Bad Tests====
+===[STUDENT TESTS/bad1.bminor Input]===
+@
+#
+&
+|
+\
+===[STUDENT TESTS/bad1.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad1.bminor Output]===
+ERROR_TOKEN: @ is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad10.bminor Input]===
+// invalid character
+'\'
+
+===[STUDENT TESTS/bad10.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad10.bminor Output]===
+CPPCOMMENT_TOKEN
+ERROR_TOKEN: '\' is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad2.bminor Input]===
+// unmatched comment throws error 
+/* This is a comment.
+
+
+
+
+
+
+
+
+===[STUDENT TESTS/bad2.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad2.bminor Output]===
+CPPCOMMENT_TOKEN
+DIVISION_TOKEN
+MULTIPLY_TOKEN
+ID_TOKEN This
+ID_TOKEN is
+ID_TOKEN a
+ID_TOKEN comment
+ERROR_TOKEN: . is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad3.bminor Input]===
+// basic data types
+" the quote is unmatched
+
+
+
+
+
+
+
+===[STUDENT TESTS/bad3.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad3.bminor Output]===
+CPPCOMMENT_TOKEN
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad4.bminor Input]===
+// doesn't support weird stuff
+50006.AB;
+
+===[STUDENT TESTS/bad4.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad4.bminor Output]===
+CPPCOMMENT_TOKEN
+INT_TOKEN 50006
+ERROR_TOKEN: . is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad5.bminor Input]===
+// test comparotors and boolean logic
+if (a | b)
+{
+	print " a || b is true";
+}
+if (a & b)// must had 2 &&
+{
+	print " a || b is true";
+}
+
+===[STUDENT TESTS/bad5.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad5.bminor Output]===
+CPPCOMMENT_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+ERROR_TOKEN: | is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad6.bminor Input]===
+
+"""
+
+
+===[STUDENT TESTS/bad6.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad6.bminor Output]===
+STRING_TOKEN 
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad7.bminor Input]===
+"012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+
+
+===[STUDENT TESTS/bad7.bminor Status]===
+return code: 0
+TEST NOT PASSED
+
+===[STUDENT TESTS/bad7.bminor Output]===
+STRING_TOKEN 012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+
+
+
+
+===[STUDENT TESTS/bad8.bminor Input]===
+$minus
+
+===[STUDENT TESTS/bad8.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad8.bminor Output]===
+ERROR_TOKEN: $ is not a valid token
+
+
+
+
+===[STUDENT TESTS/bad9.bminor Input]===
+minus#44
+
+===[STUDENT TESTS/bad9.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[STUDENT TESTS/bad9.bminor Output]===
+ID_TOKEN minus
+ERROR_TOKEN: # is not a valid token
+
+
+
+
+=====HIDDEN TESTS=====
+====Good Tests====
+===[HIDDEN TESTS/good11.bminor Input]===
+// some more complicated corner cases
+z = -(5 * 4);
+z = 15 + 5 - 4*3/7;
+z = x + (y * 5 - (4 + 20/v) - 15) % 6 + z; //long integer expr
+z+++; // these will cause parsing errors
+w---;
+
+
+===[HIDDEN TESTS/good11.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good11.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+SUBTRACTION_TOKEN
+OPEN_PARAN_TOKEN
+INT_TOKEN 5
+MULTIPLY_TOKEN
+INT_TOKEN 4
+CLOSE_PARAN_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+INT_TOKEN 15
+ADDITION_TOKEN
+INT_TOKEN 5
+SUBTRACTION_TOKEN
+INT_TOKEN 4
+MULTIPLY_TOKEN
+INT_TOKEN 3
+DIVISION_TOKEN
+INT_TOKEN 7
+SEMICOLON_TOKEN
+ID_TOKEN z
+ASSIGN_TOKEN
+ID_TOKEN x
+ADDITION_TOKEN
+OPEN_PARAN_TOKEN
+ID_TOKEN y
+MULTIPLY_TOKEN
+INT_TOKEN 5
+SUBTRACTION_TOKEN
+OPEN_PARAN_TOKEN
+INT_TOKEN 4
+ADDITION_TOKEN
+INT_TOKEN 20
+DIVISION_TOKEN
+ID_TOKEN v
+CLOSE_PARAN_TOKEN
+SUBTRACTION_TOKEN
+INT_TOKEN 15
+CLOSE_PARAN_TOKEN
+MODULO_TOKEN
+INT_TOKEN 6
+ADDITION_TOKEN
+ID_TOKEN z
+SEMICOLON_TOKEN
+CPPCOMMENT_TOKEN
+ID_TOKEN z
+INCREMENT_TOKEN
+ADDITION_TOKEN
+SEMICOLON_TOKEN
+CPPCOMMENT_TOKEN
+ID_TOKEN w
+DECREMENT_TOKEN
+SUBTRACTION_TOKEN
+SEMICOLON_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good12.bminor Input]===
+//tests the for/print keyword and while keyword
+x:integer;
+for(x = 0; x < 5; x++)
+{
+	print "counting: ", x;
+}
+a:integer = 0;
+while(a > 0)
+{
+	a--;
+}
+
+
+
+===[HIDDEN TESTS/good12.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good12.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN x
+COLON_TOKEN
+INTEGER
+SEMICOLON_TOKEN
+FOR
+OPEN_PARAN_TOKEN
+ID_TOKEN x
+ASSIGN_TOKEN
+INT_TOKEN 0
+SEMICOLON_TOKEN
+ID_TOKEN x
+LESS_TOKEN
+INT_TOKEN 5
+SEMICOLON_TOKEN
+ID_TOKEN x
+INCREMENT_TOKEN
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN counting: 
+COMMA_TOKEN
+ID_TOKEN x
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+ID_TOKEN a
+COLON_TOKEN
+INTEGER
+ASSIGN_TOKEN
+INT_TOKEN 0
+SEMICOLON_TOKEN
+WHILE
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+GREATER_TOKEN
+INT_TOKEN 0
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN a
+DECREMENT_TOKEN
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good13.bminor Input]===
+//test some odd identifier names
+ident55
+ident55_
+ident__55__
+thisIsAReallyReallyLongIdentifierNameThatHasTonsOfLettersInIt = 7
+variable_names_may_contain_underscores_
+_variables_can_start_with_an_underscore_67
+7minus5 
+
+===[HIDDEN TESTS/good13.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good13.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN ident55
+ID_TOKEN ident55
+ID_TOKEN _
+ID_TOKEN ident
+ID_TOKEN _
+ID_TOKEN _55
+ID_TOKEN _
+ID_TOKEN _
+ID_TOKEN thisIsAReallyReallyLongIdentifierNameThatHasTonsOfLettersInIt
+ASSIGN_TOKEN
+INT_TOKEN 7
+ID_TOKEN variable
+ID_TOKEN _names
+ID_TOKEN _may
+ID_TOKEN _contain
+ID_TOKEN _underscores
+ID_TOKEN _
+ID_TOKEN _variables
+ID_TOKEN _can
+ID_TOKEN _start
+ID_TOKEN _with
+ID_TOKEN _an
+ID_TOKEN _underscore
+ID_TOKEN _67
+INT_TOKEN 7
+ID_TOKEN minus5
+
+
+
+
+===[HIDDEN TESTS/good14.bminor Input]===
+main: function integer ( argc: integer, argv: array [] string ) =
+{
+}
+boolFunction: function boolean(intVar:integer) =
+{
+	return intVar > 5;
+}
+intFunction: function integer(integer n) =
+{
+	total:integer = 0;
+	int count;
+	for(count = 0; count < n+1; count++)
+	{
+		total = total + count;
+	
+}
+
+
+===[HIDDEN TESTS/good14.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good14.bminor Output]===
+ID_TOKEN main
+COLON_TOKEN
+FUNCTION
+INTEGER
+OPEN_PARAN_TOKEN
+ID_TOKEN argc
+COLON_TOKEN
+INTEGER
+COMMA_TOKEN
+ID_TOKEN argv
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+STRING
+CLOSE_PARAN_TOKEN
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+CLOSE_CURLY_TOKEN
+ID_TOKEN boolFunction
+COLON_TOKEN
+FUNCTION
+BOOLEAN
+OPEN_PARAN_TOKEN
+ID_TOKEN intVar
+COLON_TOKEN
+INTEGER
+CLOSE_PARAN_TOKEN
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+RETURN
+ID_TOKEN intVar
+GREATER_TOKEN
+INT_TOKEN 5
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+ID_TOKEN intFunction
+COLON_TOKEN
+FUNCTION
+INTEGER
+OPEN_PARAN_TOKEN
+INTEGER
+ID_TOKEN n
+CLOSE_PARAN_TOKEN
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN total
+COLON_TOKEN
+INTEGER
+ASSIGN_TOKEN
+INT_TOKEN 0
+SEMICOLON_TOKEN
+ID_TOKEN int
+ID_TOKEN count
+SEMICOLON_TOKEN
+FOR
+OPEN_PARAN_TOKEN
+ID_TOKEN count
+ASSIGN_TOKEN
+INT_TOKEN 0
+SEMICOLON_TOKEN
+ID_TOKEN count
+LESS_TOKEN
+ID_TOKEN n
+INT_TOKEN 1
+SEMICOLON_TOKEN
+ID_TOKEN count
+INCREMENT_TOKEN
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN total
+ASSIGN_TOKEN
+ID_TOKEN total
+ADDITION_TOKEN
+ID_TOKEN count
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good15.bminor Input]===
+intFunction: function integer(intVar:integer, boolVar: boolean)
+{
+	if(boolVar)
+	{
+		intVar = intVar * 2;
+	}
+	return intVar;
+}
+// finds the largest value in the array
+getLargest: function integer(intArrVar:array [] integer, int len) =
+{
+	largest:integer = 0;
+	x:integer;
+	for(x = 0; x < len; x++)
+	{
+		if(intArrVar[x] > largest)
+		{
+			largest = intArrVar[x];
+		}
+	}
+	return largest;
+		
+}
+
+main: function integer ( argc: integer, argv: array [] string ) =
+{
+	b:array [10] integer = {0,1,2,3,4,5};
+	b[4] = 6;
+	i:integer;
+	z:integer = intFunction(i, true);
+	print intArrFunction(v, z);
+}
+
+===[HIDDEN TESTS/good15.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good15.bminor Output]===
+ID_TOKEN intFunction
+COLON_TOKEN
+FUNCTION
+INTEGER
+OPEN_PARAN_TOKEN
+ID_TOKEN intVar
+COLON_TOKEN
+INTEGER
+COMMA_TOKEN
+ID_TOKEN boolVar
+COLON_TOKEN
+BOOLEAN
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN boolVar
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN intVar
+ASSIGN_TOKEN
+ID_TOKEN intVar
+MULTIPLY_TOKEN
+INT_TOKEN 2
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+RETURN
+ID_TOKEN intVar
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+CPPCOMMENT_TOKEN
+ID_TOKEN getLargest
+COLON_TOKEN
+FUNCTION
+INTEGER
+OPEN_PARAN_TOKEN
+ID_TOKEN intArrVar
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+INTEGER
+COMMA_TOKEN
+ID_TOKEN int
+ID_TOKEN len
+CLOSE_PARAN_TOKEN
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN largest
+COLON_TOKEN
+INTEGER
+ASSIGN_TOKEN
+INT_TOKEN 0
+SEMICOLON_TOKEN
+ID_TOKEN x
+COLON_TOKEN
+INTEGER
+SEMICOLON_TOKEN
+FOR
+OPEN_PARAN_TOKEN
+ID_TOKEN x
+ASSIGN_TOKEN
+INT_TOKEN 0
+SEMICOLON_TOKEN
+ID_TOKEN x
+LESS_TOKEN
+ID_TOKEN len
+SEMICOLON_TOKEN
+ID_TOKEN x
+INCREMENT_TOKEN
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN intArrVar
+OPEN_BRACK_TOKEN
+ID_TOKEN x
+CLOSE_BRACK_TOKEN
+GREATER_TOKEN
+ID_TOKEN largest
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN largest
+ASSIGN_TOKEN
+ID_TOKEN intArrVar
+OPEN_BRACK_TOKEN
+ID_TOKEN x
+CLOSE_BRACK_TOKEN
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+CLOSE_CURLY_TOKEN
+RETURN
+ID_TOKEN largest
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+ID_TOKEN main
+COLON_TOKEN
+FUNCTION
+INTEGER
+OPEN_PARAN_TOKEN
+ID_TOKEN argc
+COLON_TOKEN
+INTEGER
+COMMA_TOKEN
+ID_TOKEN argv
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+STRING
+CLOSE_PARAN_TOKEN
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+ID_TOKEN b
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+INT_TOKEN 10
+CLOSE_BRACK_TOKEN
+INTEGER
+ASSIGN_TOKEN
+OPEN_CURLY_TOKEN
+INT_TOKEN 0
+COMMA_TOKEN
+INT_TOKEN 1
+COMMA_TOKEN
+INT_TOKEN 2
+COMMA_TOKEN
+INT_TOKEN 3
+COMMA_TOKEN
+INT_TOKEN 4
+COMMA_TOKEN
+INT_TOKEN 5
+CLOSE_CURLY_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN b
+OPEN_BRACK_TOKEN
+INT_TOKEN 4
+CLOSE_BRACK_TOKEN
+ASSIGN_TOKEN
+INT_TOKEN 6
+SEMICOLON_TOKEN
+ID_TOKEN i
+COLON_TOKEN
+INTEGER
+SEMICOLON_TOKEN
+ID_TOKEN z
+COLON_TOKEN
+INTEGER
+ASSIGN_TOKEN
+ID_TOKEN intFunction
+OPEN_PARAN_TOKEN
+ID_TOKEN i
+COMMA_TOKEN
+TRUE
+CLOSE_PARAN_TOKEN
+SEMICOLON_TOKEN
+PRINT
+ID_TOKEN intArrFunction
+OPEN_PARAN_TOKEN
+ID_TOKEN v
+COMMA_TOKEN
+ID_TOKEN z
+CLOSE_PARAN_TOKEN
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good1.bminor Input]===
+// Easy comment
+/* Easy comment */
+
+===[HIDDEN TESTS/good1.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good1.bminor Output]===
+CPPCOMMENT_TOKEN
+CCOMMENT_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good10.bminor Input]===
+// Modulus operator
+15%3
+
+// Exponentiation operator
+2^6
+
+// Negation
+-value
+
+// Postincrement and postdecrement
+number++;
+
+number--;
+
+===[HIDDEN TESTS/good10.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good10.bminor Output]===
+CPPCOMMENT_TOKEN
+INT_TOKEN 15
+MODULO_TOKEN
+INT_TOKEN 3
+CPPCOMMENT_TOKEN
+INT_TOKEN 2
+POWER_TOKEN
+INT_TOKEN 6
+CPPCOMMENT_TOKEN
+SUBTRACTION_TOKEN
+ID_TOKEN value
+CPPCOMMENT_TOKEN
+ID_TOKEN number
+INCREMENT_TOKEN
+SEMICOLON_TOKEN
+ID_TOKEN number
+DECREMENT_TOKEN
+SEMICOLON_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good2.bminor Input]===
+////* Harder comment ***/
+/******************/
+/*
+This one works too.
+*/
+/***************
+Also a good comment.
+****************/
+// comment // comment // comment
+
+
+===[HIDDEN TESTS/good2.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good2.bminor Output]===
+CPPCOMMENT_TOKEN
+CCOMMENT_TOKEN
+CCOMMENT_TOKEN
+CCOMMENT_TOKEN
+CPPCOMMENT_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good3.bminor Input]===
+// Identifiers
+CamelCase
+lower_case
+skiddo23
+B4UFLY
+i
+x15
+
+
+===[HIDDEN TESTS/good3.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good3.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN CamelCase
+ID_TOKEN lower
+ID_TOKEN _case
+ID_TOKEN skiddo23
+ID_TOKEN B4UFLY
+ID_TOKEN i
+ID_TOKEN x15
+
+
+
+
+===[HIDDEN TESTS/good4.bminor Input]===
+// Equality Operators
+== != <= < > >=
+
+===[HIDDEN TESTS/good4.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good4.bminor Output]===
+CPPCOMMENT_TOKEN
+ASSERT_EQ_TOKEN
+NOT_EQUAL_TOKEN
+LESS_OR_EQ_TOKEN
+LESS_TOKEN
+GREATER_TOKEN
+GREATER_OR_EQ_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good5.bminor Input]===
+// Various bits of punctuation
+, : ; ( ) [ ] { }
+
+
+===[HIDDEN TESTS/good5.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good5.bminor Output]===
+CPPCOMMENT_TOKEN
+COMMA_TOKEN
+COLON_TOKEN
+SEMICOLON_TOKEN
+OPEN_PARAN_TOKEN
+CLOSE_PARAN_TOKEN
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+OPEN_CURLY_TOKEN
+CLOSE_CURLY_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good6.bminor Input]===
+// Complete function prototype
+main: function integer ( argc: integer, argv: array [] string );
+
+
+===[HIDDEN TESTS/good6.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good6.bminor Output]===
+CPPCOMMENT_TOKEN
+ID_TOKEN main
+COLON_TOKEN
+FUNCTION
+INTEGER
+OPEN_PARAN_TOKEN
+ID_TOKEN argc
+COLON_TOKEN
+INTEGER
+COMMA_TOKEN
+ID_TOKEN argv
+COLON_TOKEN
+ARRAY
+OPEN_BRACK_TOKEN
+CLOSE_BRACK_TOKEN
+STRING
+CLOSE_PARAN_TOKEN
+SEMICOLON_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good7.bminor Input]===
+// Nested statements
+if( x<15 ) {
+    print "small";
+} else {
+    print "large!";
+}
+
+
+===[HIDDEN TESTS/good7.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good7.bminor Output]===
+CPPCOMMENT_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN x
+LESS_TOKEN
+INT_TOKEN 15
+CLOSE_PARAN_TOKEN
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN small
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+ELSE
+OPEN_CURLY_TOKEN
+PRINT
+STRING_TOKEN large!
+SEMICOLON_TOKEN
+CLOSE_CURLY_TOKEN
+
+
+
+
+===[HIDDEN TESTS/good8.bminor Input]===
+// Valid integers
+0
+1024
+-512
++256
+// valid floats
+1.2
+0.45
+.67
+12e10
++1.2
+-1.2
+1.2e+1
+1.2e-1
++1.2e+1
++1.2e-1
+-1.2e+1
+-1.2e-1
+
+===[HIDDEN TESTS/good8.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good8.bminor Output]===
+CPPCOMMENT_TOKEN
+INT_TOKEN 0
+INT_TOKEN 1024
+INT_TOKEN -512
+INT_TOKEN 256
+CPPCOMMENT_TOKEN
+FLOAT_TOKEN 1.200000
+FLOAT_TOKEN 0.450000
+FLOAT_TOKEN 0.670000
+FLOAT_TOKEN 120000000000.000000
+FLOAT_TOKEN 1.200000
+FLOAT_TOKEN -1.200000
+FLOAT_TOKEN 12.000000
+FLOAT_TOKEN 0.120000
+FLOAT_TOKEN 12.000000
+FLOAT_TOKEN 0.120000
+FLOAT_TOKEN -12.000000
+FLOAT_TOKEN -0.120000
+
+
+
+
+===[HIDDEN TESTS/good9.bminor Input]===
+// Type Keywords
+array
+boolean
+char
+string
+void
+integer
+float
+
+===[HIDDEN TESTS/good9.bminor Status]===
+return code: 0
+Test passed successfully!
+
+===[HIDDEN TESTS/good9.bminor Output]===
+CPPCOMMENT_TOKEN
+ARRAY
+BOOLEAN
+CHAR
+STRING
+VOID
+INTEGER
+FLOAT
+
+
+
+
+====Bad Tests====
+===[HIDDEN TESTS/bad11.bminor Input]===
+/*
+A string should not contain a literal newline,
+but use backslash-n instead.
+*/
+
+"invalid
+
+string"
+
+===[HIDDEN TESTS/bad11.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad11.bminor Output]===
+CCOMMENT_TOKEN
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad12.bminor Input]===
+'ca'
+
+===[HIDDEN TESTS/bad12.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad12.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad13.bminor Input]===
+''
+
+===[HIDDEN TESTS/bad13.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad13.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad14.bminor Input]===
+'\ac'
+
+===[HIDDEN TESTS/bad14.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad14.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad15.bminor Input]===
+'
+
+===[HIDDEN TESTS/bad15.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad15.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad1.bminor Input]===
+"unmatched string""
+
+===[HIDDEN TESTS/bad1.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad1.bminor Output]===
+STRING_TOKEN unmatched string
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad10.bminor Input]===
+#compilers // No hashtags in B-minor
+
+===[HIDDEN TESTS/bad10.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad10.bminor Output]===
+ERROR_TOKEN: # is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad2.bminor Input]===
+"unterminated \"
+
+
+===[HIDDEN TESTS/bad2.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad2.bminor Output]===
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad3.bminor Input]===
+never started"
+
+
+
+
+
+
+===[HIDDEN TESTS/bad3.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad3.bminor Output]===
+ID_TOKEN never
+ID_TOKEN started
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad4.bminor Input]===
+'character?' // Character too long.
+
+===[HIDDEN TESTS/bad4.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad4.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad5.bminor Input]===
+'' // Empty character not allowed.
+
+===[HIDDEN TESTS/bad5.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad5.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad6.bminor Input]===
+~tilde // Invalid symbol
+
+===[HIDDEN TESTS/bad6.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad6.bminor Output]===
+ERROR_TOKEN: ~ is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad7.bminor Input]===
+/* Is this a valid comment */ @ */
+
+
+===[HIDDEN TESTS/bad7.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad7.bminor Output]===
+CCOMMENT_TOKEN
+ERROR_TOKEN: @ is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad8.bminor Input]===
+"\0xGG" // invalid escape sequence
+
+===[HIDDEN TESTS/bad8.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad8.bminor Output]===
+Hex format incorrect to decode
+ERROR_TOKEN: "\0xGG" is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad9.bminor Input]===
+minus#44
+
+===[HIDDEN TESTS/bad9.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad9.bminor Output]===
+ID_TOKEN minus
+ERROR_TOKEN: # is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad16.bminor Input]===
+@
+#
+&
+|
+\
+
+===[HIDDEN TESTS/bad16.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad16.bminor Output]===
+ERROR_TOKEN: @ is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad17.bminor Input]===
+// unmatched comment throws error 
+/* This is a comment.
+
+
+
+
+
+
+
+
+===[HIDDEN TESTS/bad17.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad17.bminor Output]===
+CPPCOMMENT_TOKEN
+DIVISION_TOKEN
+MULTIPLY_TOKEN
+ID_TOKEN This
+ID_TOKEN is
+ID_TOKEN a
+ID_TOKEN comment
+ERROR_TOKEN: . is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad18.bminor Input]===
+// basic data types
+" the quote is unmatched
+
+
+
+
+
+
+
+===[HIDDEN TESTS/bad18.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad18.bminor Output]===
+CPPCOMMENT_TOKEN
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad19.bminor Input]===
+// floating point mistake
+5..6..0..5..0;
+
+===[HIDDEN TESTS/bad19.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad19.bminor Output]===
+CPPCOMMENT_TOKEN
+INT_TOKEN 5
+ERROR_TOKEN: . is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad20.bminor Input]===
+// test comparotors and boolean logic
+if (a | b)
+{
+	print " a || b is true";
+}
+if (a & b)// must had 2 &&
+{
+	print " a || b is true";
+}
+
+===[HIDDEN TESTS/bad20.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad20.bminor Output]===
+CPPCOMMENT_TOKEN
+IF
+OPEN_PARAN_TOKEN
+ID_TOKEN a
+ERROR_TOKEN: | is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad21.bminor Input]===
+
+"""
+
+
+===[HIDDEN TESTS/bad21.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad21.bminor Output]===
+STRING_TOKEN 
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad22.bminor Input]===
+"012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+
+
+===[HIDDEN TESTS/bad22.bminor Status]===
+return code: 0
+TEST NOT PASSED
+
+===[HIDDEN TESTS/bad22.bminor Output]===
+STRING_TOKEN 012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789010123456789012345678901012345678901234567890101234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+
+
+
+
+===[HIDDEN TESTS/bad23.bminor Input]===
+$minus
+
+===[HIDDEN TESTS/bad23.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad23.bminor Output]===
+ERROR_TOKEN: $ is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad25.bminor Input]===
+// invalid character
+'😋'
+
+===[HIDDEN TESTS/bad25.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad25.bminor Output]===
+CPPCOMMENT_TOKEN
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad26.bminor Input]===
+/*
+A string should not contain a literal newline,
+but use backslash-n instead.
+*/
+
+"invalid
+
+string"
+
+===[HIDDEN TESTS/bad26.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad26.bminor Output]===
+CCOMMENT_TOKEN
+ERROR_TOKEN: " is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad27.bminor Input]===
+'''
+
+===[HIDDEN TESTS/bad27.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad27.bminor Output]===
+ERROR_TOKEN: ''' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad28.bminor Input]===
+"'"'"
+
+===[HIDDEN TESTS/bad28.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad28.bminor Output]===
+STRING_TOKEN '
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad29.bminor Input]===
+'\t\e\s\t\ \s\t\r\i\n\g'
+
+===[HIDDEN TESTS/bad29.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad29.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad30.bminor Input]===
+'\0x12\0x34'
+
+===[HIDDEN TESTS/bad30.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad30.bminor Output]===
+ERROR_TOKEN: ' is not a valid token
+
+
+
+
+===[HIDDEN TESTS/bad0.bminor Input]===
+!@#$*(!&%!@)#(@!+)!@*!@)*$!@_)(%!@_%(*!
+
+===[HIDDEN TESTS/bad0.bminor Status]===
+return code: 1
+Test passed successfully!
+
+===[HIDDEN TESTS/bad0.bminor Output]===
+NOT_TOKEN
+ERROR_TOKEN: @ is not a valid token
+
+
+
+
+===== SUMMARIZED SCANNER RESULTS =====
+{
+  "student_tests": {
+    "Good": {
+      "correct": 10,
+      "incorrect": 0
+    },
+    "Bad": {
+      "correct": 9,
+      "incorrect": 1
+    }
+  },
+  "hidden_tests": {
+    "Good": {
+      "correct": 15,
+      "incorrect": 0
+    },
+    "Bad": {
+      "correct": 29,
+      "incorrect": 1
+    }
+  }
+}
+Scanner Project Grade
+    ---------------------------------
+
+    General Structure (35/35 points)
+    ----------------------------------------------
+    The main program looks pretty clean. Nice work keeping it concise and readable
+
+    Student Tests (19/20 points)
+    ------------------------------------------
+    Missed one case where the decoded string was too long
+
+    Hidden Tests (44/45 points)
+    ------------------------------------------
+    Exact same test case as above
+
+    Coding Style (10/10 points)
+    ------------------------------------------
+    Your scanner code file is pretty cool! I like your approach to writing functions and printing out the tokens
