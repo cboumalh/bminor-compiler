@@ -9,7 +9,8 @@
 //flags
 enum Flags {
     ENCODE_FLAG = 1 << 0,
-    SCAN_FLAG = 1 << 1
+    SCAN_FLAG = 1 << 1,
+    PARSE_FLAG = 1 << 2
 };
 
 
