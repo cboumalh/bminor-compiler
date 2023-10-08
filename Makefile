@@ -14,7 +14,6 @@ SCAN = scan
 PARSE = parse
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
-
 $(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o
 	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o
 
@@ -30,7 +29,7 @@ $(ENCODE).o: $(ENCODE).c $(ENCODE).h
 $(UTIL).o: $(UTIL).c $(UTIL).h
 	$(CMP) $(CFLAGS) -c $(UTIL).c -o $(UTIL).o
 
-$(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h $(PARSE).h
+$(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h
 	$(CMP) $(CFLAGS) -c $(MAIN).c -o $(MAIN).o
 
 test: $(EXEC)

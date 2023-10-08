@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "parser.tab.h"
 #include <string.h>
 #include "token.h"
 #include "encode.h"
@@ -79,28 +80,26 @@ semicolon     ;
 error         .
 
 %%
-{eatmeup} {
-  return NOTHING_TOKEN;
-}
+{eatmeup} ;
 
 {Ccomment} {
-  printf("%s\n", TokenNames[CCOMMENT_TOKEN]);
+  printf("%s\n", TokenNames[CCOMMENT_TOKEN - 258]);
   return CCOMMENT_TOKEN;
 }
 
 {CppComment} {
-  printf("%s\n", TokenNames[CPPCOMMENT_TOKEN]);
+  printf("%s\n", TokenNames[CPPCOMMENT_TOKEN - 258]);
   return CPPCOMMENT_TOKEN;
 }
 
 {IdOrKeyword} {
   if(strlen(yytext) > MAXIDSZ){
-    printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN], yytext);
+    printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN - 258], yytext);
     return ERROR_TOKEN;
   }
   int token = processIdMatch(yytext);
   if(token == ID_TOKEN)
-    printf("%s %s\n", TokenNames[token], yytext);
+    printf("%s %s\n", TokenNames[token - 258], yytext);
   else{
     char output[50];
     toUpperCase(yytext, output);
@@ -111,175 +110,175 @@ error         .
 }
 
 {or} {
-  printf("%s\n", TokenNames[OR_TOKEN]);
+  printf("%s\n", TokenNames[OR_TOKEN - 258]);
   return OR_TOKEN;
 }
 
 {and} {
-  printf("%s\n", TokenNames[AND_TOKEN]);
+  printf("%s\n", TokenNames[AND_TOKEN - 258]);
   return AND_TOKEN;
 }
 
 {not} {
-  printf("%s\n", TokenNames[NOT_TOKEN]);
+  printf("%s\n", TokenNames[NOT_TOKEN - 258]);
   return NOT_TOKEN;
 }
 
 {multiply} {
-  printf("%s\n", TokenNames[MULTIPLY_TOKEN]);
+  printf("%s\n", TokenNames[MULTIPLY_TOKEN - 258]);
   return MULTIPLY_TOKEN;
 }
 
 {modulo} {
-  printf("%s\n", TokenNames[MODULO_TOKEN]);
+  printf("%s\n", TokenNames[MODULO_TOKEN - 258]);
   return MODULO_TOKEN;
 }
 
 {colon} {
-  printf("%s\n", TokenNames[COLON_TOKEN]);
+  printf("%s\n", TokenNames[COLON_TOKEN - 258]);
   return COLON_TOKEN;
 }
 
 {openParan} {
-  printf("%s\n", TokenNames[OPEN_PARAN_TOKEN]);
+  printf("%s\n", TokenNames[OPEN_PARAN_TOKEN - 258]);
   return OPEN_PARAN_TOKEN;
 }
 
 {closeParan} {
-  printf("%s\n", TokenNames[CLOSE_PARAN_TOKEN]);
+  printf("%s\n", TokenNames[CLOSE_PARAN_TOKEN - 258]);
   return CLOSE_PARAN_TOKEN;
 }
 
 {not_equal} {
-  printf("%s\n", TokenNames[NOT_EQUAL_TOKEN]);
+  printf("%s\n", TokenNames[NOT_EQUAL_TOKEN - 258]);
   return NOT_EQUAL_TOKEN;
 }
 
 {division} {
-  printf("%s\n", TokenNames[DIVISION_TOKEN]);
+  printf("%s\n", TokenNames[DIVISION_TOKEN - 258]);
   return DIVISION_TOKEN;
 }
 
 {increment} {
-  printf("%s\n", TokenNames[INCREMENT_TOKEN]);
+  printf("%s\n", TokenNames[INCREMENT_TOKEN - 258]);
   return INCREMENT_TOKEN;
 }
 
 {decrement} {
-  printf("%s\n", TokenNames[DECREMENT_TOKEN]);
+  printf("%s\n", TokenNames[DECREMENT_TOKEN - 258]);
   return DECREMENT_TOKEN;
 }
 
 {assign} {
-  printf("%s\n", TokenNames[ASSIGN_TOKEN]);
+  printf("%s\n", TokenNames[ASSIGN_TOKEN - 258]);
   return ASSIGN_TOKEN;
 }
 
 {comma} {
-  printf("%s\n", TokenNames[COMMA_TOKEN]);
+  printf("%s\n", TokenNames[COMMA_TOKEN - 258]);
   return COMMA_TOKEN;
 }
 
 {subtraction} {
-  printf("%s\n", TokenNames[SUBTRACTION_TOKEN]);
+  printf("%s\n", TokenNames[SUBTRACTION_TOKEN - 258]);
   return SUBTRACTION_TOKEN;
 }
 
 {addition} {
-  printf("%s\n", TokenNames[ADDITION_TOKEN]);
+  printf("%s\n", TokenNames[ADDITION_TOKEN - 258]);
   return ADDITION_TOKEN;
 }
 
 {power} {
-  printf("%s\n", TokenNames[POWER_TOKEN]);
+  printf("%s\n", TokenNames[POWER_TOKEN - 258]);
   return POWER_TOKEN;
 }
 
 {assertEq} {
-  printf("%s\n", TokenNames[ASSERT_EQ_TOKEN]);
+  printf("%s\n", TokenNames[ASSERT_EQ_TOKEN - 258]);
   return ASSERT_EQ_TOKEN;
 }
 
 {less} {
-  printf("%s\n", TokenNames[LESS_TOKEN]);
+  printf("%s\n", TokenNames[LESS_TOKEN - 258]);
   return LESS_TOKEN;
 }
 
 {lessOrEq} {
-  printf("%s\n", TokenNames[LESS_OR_EQ_TOKEN]);
+  printf("%s\n", TokenNames[LESS_OR_EQ_TOKEN - 258]);
   return LESS_OR_EQ_TOKEN;
 }
 
 {greater} {
-  printf("%s\n", TokenNames[GREATER_TOKEN]);
+  printf("%s\n", TokenNames[GREATER_TOKEN - 258]);
   return GREATER_TOKEN;
 }
 
 {semicolon} {
-  printf("%s\n", TokenNames[SEMICOLON_TOKEN]);
+  printf("%s\n", TokenNames[SEMICOLON_TOKEN - 258]);
   return SEMICOLON_TOKEN;
 }
 
 {validstr} {
   char *output_encoded_str = (char *)malloc(BUFSIZ * sizeof(char));
   if(string_decode(yytext, output_encoded_str)){
-    printf("%s %s\n", TokenNames[STRING_TOKEN], output_encoded_str);
+    printf("%s %s\n", TokenNames[STRING_TOKEN - 258], output_encoded_str);
     free(output_encoded_str);
     return STRING_TOKEN;
   }
 
   free(output_encoded_str);
-  printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN], yytext);
+  printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN - 258], yytext);
   return ERROR_TOKEN;
 }
 
 {basicfloat}|{scifloat} {
-  printf("%s %f\n", TokenNames[FLOAT_TOKEN], atof(yytext));
+  printf("%s %f\n", TokenNames[FLOAT_TOKEN - 258], atof(yytext));
   return FLOAT_TOKEN;
 }
 
 {validint} {
-  printf("%s %d\n", TokenNames[INT_TOKEN], atoi(yytext));
+  printf("%s %d\n", TokenNames[INT_TOKEN - 258], atoi(yytext));
   return INT_TOKEN;
 }
 
 {greaterOrEq} {
-  printf("%s\n", TokenNames[GREATER_OR_EQ_TOKEN]);
+  printf("%s\n", TokenNames[GREATER_OR_EQ_TOKEN - 258]);
   return GREATER_OR_EQ_TOKEN;
 }
 
 {openBrack} {
-  printf("%s\n", TokenNames[OPEN_BRACK_TOKEN]);
+  printf("%s\n", TokenNames[OPEN_BRACK_TOKEN - 258]);
   return OPEN_BRACK_TOKEN;
 }
 
 {closeBrack} {
-  printf("%s\n", TokenNames[CLOSE_BRACK_TOKEN]);
+  printf("%s\n", TokenNames[CLOSE_BRACK_TOKEN - 258]);
   return CLOSE_BRACK_TOKEN;
 }
 
 {openCurly} {
-  printf("%s\n", TokenNames[OPEN_CURLY_TOKEN]);
+  printf("%s\n", TokenNames[OPEN_CURLY_TOKEN - 258]);
   return OPEN_CURLY_TOKEN;
 }
 
 {closeCurly} {
-  printf("%s\n", TokenNames[CLOSE_CURLY_TOKEN]);
+  printf("%s\n", TokenNames[CLOSE_CURLY_TOKEN - 258]);
   return CLOSE_CURLY_TOKEN;
 }
 
 {validchar} {
   char result = strtochar(yytext);
   if(result != '\0'){
-    printf("%s %c\n", TokenNames[CHAR_TOKEN], result);
+    printf("%s %c\n", TokenNames[CHAR_TOKEN - 258], result);
     return CHAR_TOKEN;
   }
-  printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN], yytext);
+  printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN - 258], yytext);
   return ERROR_TOKEN;
 }
 
 {error} {
-  printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN], yytext);
+  printf("%s: %s is not a valid token\n", TokenNames[ERROR_TOKEN - 258], yytext);
   return ERROR_TOKEN;
 }
 %%
