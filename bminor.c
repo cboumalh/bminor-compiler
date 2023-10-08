@@ -12,7 +12,7 @@ int main(int argc, char *argv[]){
 
     if(argc < 2){
         usage();
-        return_status = EXIT_FAILURE;
+        run_status = EXIT_FAILURE;
         return run_status;
     }
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
 
     if(input_file_name == NULL){
         printf("No file name passed as argument\n");
-        return_status = EXIT_FAILURE;
+        run_status = EXIT_FAILURE;
         return run_status;
     }
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
 
     if (!file) {
         perror("Error opening the file");
-        return_status = EXIT_FAILURE;
+        run_status = EXIT_FAILURE;
         return run_status;
     }
 

@@ -3,7 +3,6 @@
 
 #include "lex.yy.c"
 #include <stdlib.h>
-#include "scan.h"
 #include "token.h"
 
 int scan(FILE* file){
