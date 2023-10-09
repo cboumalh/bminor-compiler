@@ -1,4 +1,3 @@
-/* Infix notation calculator. */
 
 %{
   #include <math.h>
@@ -6,9 +5,8 @@
   extern int yylex();
   extern int yyparse();
   extern FILE *yyin;
-  int yyerror(const char *s); 
+  int yyerror(const char *s);
 %}
-
 
 %token INDEX_SHIFTER_TOKEN
 %token NOTHING_TOKEN
@@ -48,58 +46,144 @@
 %token OPEN_CURLY_TOKEN
 %token CLOSE_CURLY_TOKEN
 %token ASSIGN_TOKEN
+%token ARRAY
+%token AUTO
+%token BOOLEAN
+%token CHAR
+%token ELSE
+%token FALSE
+%token FLOAT
+%token FOR
+%token FUNCTION
+%token IF
+%token INTEGER
+%token PRINT
+%token RETURN
+%token STRING
+%token TRUE
+%token VOID
+%token WHILE
+
+%nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
 %%
-program: expr1 SEMICOLON_TOKEN { printf("%d\n", $1); return 0; }
+program: decl_list {}
+    |
+
+expr1: expr2 ASSIGN_TOKEN expr1 {} 
+    |  expr2 {} 
+
+expr2: expr2 OR_TOKEN expr3 {} 
+    |  expr3 {} 
+
+expr3: expr3 AND_TOKEN expr4 {} 
+    |  expr4 {} 
+
+expr4: expr4 NOT_EQUAL_TOKEN expr5 {} 
+    |  expr4 LESS_TOKEN expr5 {} 
+    |  expr4 LESS_OR_EQ_TOKEN expr5 {} 
+    |  expr4 GREATER_TOKEN expr5 {} 
+    |  expr4 GREATER_OR_EQ_TOKEN expr5 {} 
+    |  expr4 ASSERT_EQ_TOKEN expr5 {} 
+    |  expr5 {} 
+
+expr5: expr5 ADDITION_TOKEN expr6 {} 
+    |  expr5 SUBTRACTION_TOKEN expr6 {} 
+    |  expr6 {} 
+
+expr6: expr6 MULTIPLY_TOKEN expr7 {} 
+    |  expr6 DIVISION_TOKEN expr7 {} 
+    |  expr6 MODULO_TOKEN expr7 {} 
+    |  expr7 {} 
+
+expr7: expr8 POWER_TOKEN expr7  {}
+    |  expr8 {}
+    ;
+
+expr8: SUBTRACTION_TOKEN expr8 {} 
+    |  NOT_TOKEN expr8 {} 
+    |  expr9 {} 
+    ;
+
+expr9: expr9 INCREMENT_TOKEN {} 
+    |  expr9 DECREMENT_TOKEN {} 
+    |  INCREMENT_TOKEN expr9 {} 
+    |  DECREMENT_TOKEN expr9 {} 
+    |  atomic {}
+    ;
+
+atomic: INT_TOKEN {} 
+    |   FLOAT_TOKEN {}
+    |   ID_TOKEN {} 
+    |   STRING_TOKEN {} 
+    |   FALSE {} 
+    |   TRUE {} 
+    |   CHAR_TOKEN {} 
+    |   OPEN_PARAN_TOKEN expr1 CLOSE_BRACK_TOKEN {} 
+    |   ID_TOKEN OPEN_PARAN_TOKEN opt_expr_list CLOSE_PARAN_TOKEN {} 
+    ;
+
+expr_list: expr_list COMMA_TOKEN expr1 {} 
+    |      expr1 {} 
+    ;
+
+opt_expr_list: expr_list {} 
     |
     ;
 
-expr1: expr2 ASSIGN_TOKEN expr1   { $$ = $3; }
-    |  expr2                      { $$ = $1; }
+opt_expr: expr1 {}
+    |
     ;
 
-expr2: expr2 OR_TOKEN expr3   { $$ = $1 || $3; }
-    |  expr3                    { $$ = $1; }
+type: AUTO  {} 
+    | BOOLEAN  {} 
+    | CHAR  {} 
+    | FLOAT  {}
+    | VOID  {} 
+    | INTEGER {} 
+    | STRING {} 
+    | FUNCTION type OPEN_PARAN_TOKEN opt_param_list CLOSE_PARAN_TOKEN {} 
+    | ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN type {} ;
     ;
 
-expr3: expr3 AND_TOKEN expr4 { $$ = $1 && $3; }
-    |  expr4                { $$ = $1; }
+
+param: ID_TOKEN COLON_TOKEN type {} 
     ;
 
-expr4: expr4 NOT_EQUAL_TOKEN expr5 { $$ = $1 != $3; }
-    |  expr4 LESS_TOKEN expr5 { $$ = $1 < $3; }
-    |  expr4 LESS_OR_EQ_TOKEN expr5 { $$ = $1 <= $3; }
-    |  expr4 GREATER_TOKEN expr5 { $$ = $1 > $3; }
-    |  expr4 GREATER_OR_EQ_TOKEN expr5 { $$ = $1 >= $3; }
-    |  expr4 ASSERT_EQ_TOKEN expr5 { $$ = $1 == $3; }
-    |  expr5                        { $$ = $1; }
+param_list: param_list COMMA_TOKEN param  {} 
+    |       param  {} 
     ;
 
-expr5: expr5 ADDITION_TOKEN expr6 { $$ = $1 + $3; }
-    |  expr5 SUBTRACTION_TOKEN expr6 { $$ = $1 - $3; }
-    |  expr6                        { $$ = $1; }
+opt_param_list: param_list {} 
+    |
     ;
 
-expr6: expr6 MULTIPLY_TOKEN expr7 { $$ = $1 * $3; }
-    |  expr6 DIVISION_TOKEN expr7 { $$ = $1 / $3; }
-    |  expr6 MODULO_TOKEN expr7 { $$ = $1 % $3; }
-    |  expr7                     { $$ = $1; }
+
+init: ASSIGN_TOKEN expr1   {}
+    |
     ;
 
-expr7: expr8 POWER_TOKEN expr7  { $$ = pow($1, $3); }
-    |  expr8                    { $$ = $1; }
+decl: ID_TOKEN COLON_TOKEN type init SEMICOLON_TOKEN {}
+    | ID_TOKEN COLON_TOKEN type ASSIGN_TOKEN OPEN_CURLY_TOKEN stmt_list CLOSE_CURLY_TOKEN {}
     ;
 
-expr8: SUBTRACTION_TOKEN expr8 { $$ =  -1 * $2; }
-    |  NOT_TOKEN expr8  { $$ = !$2; }
-    |  expr9             { $$ = $1; }
-
-expr9: INCREMENT_TOKEN expr8 { $$ =  -1 * $2; }
-    |  DECREMENT_TOKEN expr8  { $$ = !$2; }
-    |  expr10             { $$ = $1; }
-
-expr10: INT_TOKEN        { $$ = atoi(yytext); }
+decl_list: decl_list decl {}
+    | decl                {}
     ;
+
+
+stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN stmt
+    | expr1 SEMICOLON_TOKEN
+    | RETURN opt_expr SEMICOLON_TOKEN
+    | decl
+    |
+
+    ;
+
+stmt_list: stmt_list stmt {}
+    |
+    ;
+
 %%
 
 
