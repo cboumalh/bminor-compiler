@@ -11,14 +11,17 @@
 int processIdMatch(const char* text) {
   char keywords[][20] = {"array","auto","boolean","char","else","false","float","for","function","if","integer","print","return","string","true","void","while"};
   int i = 0;
+  int tokenTypes[] = {ARRAY, AUTO, BOOLEAN, CHAR, ELSE, FALSE, FLOAT, FOR, FUNCTION, IF, INTEGER, PRINT, RETURN, STRING, TRUE, VOID, WHILE};
+  
   for(i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++){
     if(strcmp(keywords[i], text) == 0){
-      return KEYWORD_TOKEN;
+      return tokenTypes[i]; // Return the corresponding token type
     }
   }
 
-  return ID_TOKEN;
+  return ID_TOKEN; // Default to ID_TOKEN if no match is found
 }
+
 
 char strtochar(const char* str){
   char codes[NUMBER_CODES] = {'a', 'b', 'e', 'n', 'r', 't', 'f', 'v', '\\', '\'', '\"'};
