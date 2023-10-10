@@ -44,13 +44,13 @@ char strtochar(const char* str){
 
 %}
 
-IdOrKeyword   [a-zA-Z_][a-zA-Z0-9]*
+IdOrKeyword   [a-zA-Z_][a-zA-Z0-9_]*
 Ccomment      \/\*([^\*]|([\*][^\/]))*\*+\/ 
 CppComment    \/\/.*[^\n\r]|\/\/
 validstr      ["]([^"\\\n]|\\.|\\\n)*["]
-basicfloat    [-\+]?[0-9]*\.{validint}
-scifloat      [-\+]?[0-9]*(\.{validint})?(E{validint}|e{validint})
-validint      [-\+]?[0-9]+
+basicfloat    [0-9]*\.{validint}
+scifloat      [0-9]*(\.{validint})?(E{validint}|e{validint})
+validint      [0-9]+
 eatmeup       [ \t\n\r]+
 validchar     (\')(\\)0x[2-7][A-Fa-f0-9](\')|\'[\x20-\x7E]\'|\'(\\)a\'|\'(\\)b\'|\'(\\)e\'|\'(\\)f\'|\'(\\)n\'|\'(\\)r\'|\'(\\)t\'|\'(\\)v\'|\'(\\)(\\)\'|\'(\\)(\')\'|\'(\\)(\")\'
 openParan     \(

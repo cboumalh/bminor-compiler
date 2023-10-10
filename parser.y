@@ -67,7 +67,7 @@
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
 %%
-program: decl_list {}
+program: file_cmp_list {}
     |
 
 expr1: expr2 ASSIGN_TOKEN expr1 {} 
@@ -101,6 +101,7 @@ expr7: expr8 POWER_TOKEN expr7  {}
     ;
 
 expr8: SUBTRACTION_TOKEN expr8 {} 
+    |  ADDITION_TOKEN expr8 {}
     |  NOT_TOKEN expr8 {} 
     |  expr9 {} 
     ;
@@ -119,8 +120,9 @@ atomic: INT_TOKEN {}
     |   FALSE {} 
     |   TRUE {} 
     |   CHAR_TOKEN {} 
-    |   OPEN_PARAN_TOKEN expr1 CLOSE_BRACK_TOKEN {} 
+    |   OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN {} 
     |   ID_TOKEN OPEN_PARAN_TOKEN opt_expr_list CLOSE_PARAN_TOKEN {} 
+    |   ID_TOKEN OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN {} 
     ;
 
 expr_list: expr_list COMMA_TOKEN expr1 {} 
@@ -135,19 +137,33 @@ opt_expr: expr1 {}
     |
     ;
 
-type: AUTO  {} 
+all_types: AUTO  {} 
     | BOOLEAN  {} 
     | CHAR  {} 
     | FLOAT  {}
     | VOID  {} 
     | INTEGER {} 
     | STRING {} 
-    | FUNCTION type OPEN_PARAN_TOKEN opt_param_list CLOSE_PARAN_TOKEN {} 
-    | ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN type {} ;
+    | function_type
+    | array_type
     ;
 
+basic_types: AUTO  {} 
+    | BOOLEAN  {} 
+    | CHAR  {} 
+    | FLOAT  {}
+    | VOID  {} 
+    | INTEGER {} 
+    | STRING {} 
+    ;
 
-param: ID_TOKEN COLON_TOKEN type {} 
+function_type: FUNCTION all_types OPEN_PARAN_TOKEN opt_param_list CLOSE_PARAN_TOKEN {} 
+    ;
+
+array_type: ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN all_types {}
+    ;
+
+param: ID_TOKEN COLON_TOKEN all_types {} 
     ;
 
 param_list: param_list COMMA_TOKEN param  {} 
@@ -159,28 +175,57 @@ opt_param_list: param_list {}
     ;
 
 
-init: ASSIGN_TOKEN expr1   {}
-    |
+init: ASSIGN_TOKEN expr1 {}
+    | ASSIGN_TOKEN OPEN_CURLY_TOKEN opt_expr_list CLOSE_CURLY_TOKEN  {}
+    | 
     ;
 
-decl: ID_TOKEN COLON_TOKEN type init SEMICOLON_TOKEN {}
-    | ID_TOKEN COLON_TOKEN type ASSIGN_TOKEN OPEN_CURLY_TOKEN stmt_list CLOSE_CURLY_TOKEN {}
+decl: ID_TOKEN COLON_TOKEN basic_types init SEMICOLON_TOKEN  {}
+    | ID_TOKEN COLON_TOKEN array_type init SEMICOLON_TOKEN  {}
+    | ID_TOKEN COLON_TOKEN function_type ASSIGN_TOKEN OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN {}
+    | ID_TOKEN COLON_TOKEN function_type SEMICOLON_TOKEN
     ;
 
-decl_list: decl_list decl {}
-    | decl                {}
+comment: CPPCOMMENT_TOKEN
+    | CCOMMENT_TOKEN
     ;
 
+
+file_cmp: decl
+    | comment
+    ;
+
+file_cmp_list: file_cmp_list file_cmp {}
+    | file_cmp                        {}
+    ;
 
 stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN stmt
-    | expr1 SEMICOLON_TOKEN
+    | opt_expr SEMICOLON_TOKEN
     | RETURN opt_expr SEMICOLON_TOKEN
     | decl
-    |
-
+    | PRINT opt_expr_list SEMICOLON_TOKEN
+    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN
+    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt
+    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt
     ;
 
-stmt_list: stmt_list stmt {}
+
+if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dangling
+    | decl
+    | opt_expr SEMICOLON_TOKEN
+    | RETURN opt_expr SEMICOLON_TOKEN
+    | PRINT opt_expr_list SEMICOLON_TOKEN
+    | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN if_dangling
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling
+    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN
+    ;
+
+
+decl_body: comment
+    | stmt
+
+decl_body_list: decl_body_list decl_body {}
     |
     ;
 
