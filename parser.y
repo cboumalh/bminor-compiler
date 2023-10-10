@@ -199,7 +199,16 @@ file_cmp_list: file_cmp_list file_cmp {}
     | file_cmp                        {}
     ;
 
-stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN stmt
+
+flow_ending_stmt: SEMICOLON_TOKEN
+    | stmt
+    ;
+
+flow_ending_if_dangling: SEMICOLON_TOKEN
+    | if_dangling
+    ;
+
+stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_stmt
     | expr1 SEMICOLON_TOKEN
     | RETURN opt_expr SEMICOLON_TOKEN
     | decl
@@ -207,7 +216,7 @@ stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt
     | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN
     | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt
     | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_stmt
     ;
 
 
@@ -216,8 +225,8 @@ if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dan
     | expr1 SEMICOLON_TOKEN
     | RETURN opt_expr SEMICOLON_TOKEN
     | PRINT opt_expr_list SEMICOLON_TOKEN
-    | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN if_dangling
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling
+    | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_if_dangling
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling
     | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN
     ;
 
