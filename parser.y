@@ -200,7 +200,7 @@ file_cmp_list: file_cmp_list file_cmp {}
     ;
 
 stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN stmt
-    | opt_expr SEMICOLON_TOKEN
+    | expr1 SEMICOLON_TOKEN
     | RETURN opt_expr SEMICOLON_TOKEN
     | decl
     | PRINT opt_expr_list SEMICOLON_TOKEN
@@ -213,7 +213,7 @@ stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt
 
 if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dangling
     | decl
-    | opt_expr SEMICOLON_TOKEN
+    | expr1 SEMICOLON_TOKEN
     | RETURN opt_expr SEMICOLON_TOKEN
     | PRINT opt_expr_list SEMICOLON_TOKEN
     | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN if_dangling

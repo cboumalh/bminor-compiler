@@ -8,7 +8,7 @@ EXEC = bminor
 SCANNER = scanner
 PARSER = parser
 BS = bison
-BS_FLAGS = -d
+BS_FLAGS = -d -v
 LEX = lex.yy
 SCAN = scan
 PARSE = parse
@@ -36,5 +36,5 @@ test: $(EXEC)
 	sh runtest.sh
 
 clean:
-	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.*
+	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out
 

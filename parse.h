@@ -7,9 +7,10 @@
 
 int parse(FILE* file){
     yyin = file;
-    if(yyparse() == 0)
+    if(yyparse() == 0){
         printf("Parse Succeeded\n");
         return EXIT_SUCCESS;
+    }
 
     printf("Parse Failed\n");
     return EXIT_FAILURE;
