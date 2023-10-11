@@ -10,7 +10,10 @@ int scan(FILE* file){
     while(1){
         int token = yylex();
         if(!token) break;
-        if (token == ERROR_TOKEN) return EXIT_FAILURE;
+        if (token == ERROR_TOKEN) {
+            printf("Scan Failed\n");
+            return EXIT_FAILURE;
+        }
     }
     
     return EXIT_SUCCESS;
