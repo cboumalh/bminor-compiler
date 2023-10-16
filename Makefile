@@ -13,11 +13,14 @@ LEX = lex.yy
 SCAN = scan
 PARSE = parse
 EXPR = expr
+TYPE = type
+PARAM_LIST = param_list
+
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
 
-$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o
-	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o
+$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o
+	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o
 
 $(LEX).c: $(SCANNER).l $(PARSER).tab.h
 	$(FL) $(SCANNER).l
@@ -33,6 +36,12 @@ $(UTIL).o: $(UTIL).c $(UTIL).h
 
 $(EXPR).o: $(EXPR).c $(EXPR).h
 	$(CMP) $(CFLAGS) -c $(EXPR).c -o $(EXPR).o
+
+$(TYPE).o: $(TYPE).c $(TYPE).h
+	$(CMP) $(CFLAGS) -c $(TYPE).c -o $(TYPE).o
+
+$(PARAM_LIST).o: $(PARAM_LIST).c $(PARAM_LIST).h
+	$(CMP) $(CFLAGS) -c $(PARAM_LIST).c -o $(PARAM_LIST).o	
 
 $(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h $(PARSE).h
 	$(CMP) $(CFLAGS) -c $(MAIN).c -o $(MAIN).o

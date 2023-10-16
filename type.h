@@ -2,6 +2,9 @@
 #define TYPE_H
 
 #include "param_list.h"
+#include <stdlib.h>
+#include <string.h>
+#include "utils.h"
 
 typedef enum {
 	TYPE_VOID,
@@ -11,6 +14,8 @@ typedef enum {
 	TYPE_STRING,
 	TYPE_ARRAY,
 	TYPE_FUNCTION,
+	TYPE_AUTO,
+	TYPE_FLOAT
 } type_t;
 
 struct type {
