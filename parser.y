@@ -7,7 +7,9 @@
   extern int yyparse();
   extern FILE *yyin;
   int yyerror(const char *s);
+
   struct decl *parser_result = 0;
+
 %}
 
 
@@ -82,14 +84,14 @@
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
 %type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
-%type <d> decl file_cmp file_cmp_list
+%type <d> decl file_body file_body_list
 %type <c> comment
 
 
 
 %%
-program: file_cmp_list {  }
-    |                  { }
+program: file_body_list { parser_result = $1; }
+    |                   { parser_result = NULL; }
 
 expr1: expr2 ASSIGN_TOKEN expr1 { $$ = expr_create(EXPR_ASSIGN, $1, $3); } 
     |  expr2                    { $$ = $1; }
@@ -146,7 +148,7 @@ atomic: INT_TOKEN                                                 { $$ = expr_cr
     |   ID_TOKEN OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN         { $$ = expr_create(EXPR_SUBSCRIPT, expr_create_name(yytext), $3); } 
     ;
 
-expr_list: expr_list COMMA_TOKEN expr1 { $$ = $1; $$->right = $3; } 
+expr_list: expr1 COMMA_TOKEN expr_list { $$ = $1; $1->right = $3; } 
     |      expr1 { $$ = expr_create(EXPR_ARG, $1, NULL); } 
     ;
 
@@ -187,7 +189,7 @@ array_type: ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN all_types { $$ = t
 param: ID_TOKEN COLON_TOKEN all_types { $$ = param_list_create(yytext, $3, NULL); } 
     ;
 
-param_list: param_list COMMA_TOKEN param  { $$ = $1; $$->next = $3; } 
+param_list: param COMMA_TOKEN param_list  { $$ = $1; $1->next = $3; } 
     |       param                         { $$ = $1; }
     ;
 
@@ -212,12 +214,12 @@ comment: CPPCOMMENT_TOKEN { $$ = NULL; }
     ;
 
 
-file_cmp: decl { $$ = $1; }
+file_body: decl { $$ = $1; }
     | comment  { $$ = decl_create(NULL, NULL, NULL, NULL, NULL); }
     ;
 
-file_cmp_list: file_cmp_list file_cmp { $$ = $1; $$->next = $2; }
-    | file_cmp                        { $$ = $1; }
+file_body_list: file_body file_body_list { $$ = $1; $$->next = $2; }
+    | file_body                          { $$ = $1; }
     ;
 
 
@@ -247,7 +249,7 @@ if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dan
     | RETURN opt_expr SEMICOLON_TOKEN                                                                                           { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                       { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_if_dangling { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL, NULL); }
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); }
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); } 
     | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN                                                                         { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
     ;
 
@@ -255,7 +257,7 @@ if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dan
 decl_body: comment { $$ = stmt_create(STMT_COMMENT, NULL, NULL, NULL, NULL, NULL, NULL, NULL); }
     | stmt         { $$ = $1; }
 
-decl_body_list: decl_body_list decl_body { $$ = $1; $$->next = $2; }
+decl_body_list: decl_body decl_body_list { $$ = $1; $1->next = $2; }
     |                                    { $$ = NULL; }
     ;
 

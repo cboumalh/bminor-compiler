@@ -5,13 +5,17 @@ struct decl * decl_create( char *name, struct type *type, struct expr *value, st
 
 	memset(d, 0, sizeof(struct decl));
 
-    char *temp =  strdup(name);
+    char *temp =  NULL;
+    
+    if(name){
+        temp = strdup(name);
 
-	int i = 0;
-	while(temp[i] != '\0' && temp[i] != ':')
-		i++;
+        int i = 0;
+        while(temp[i] != '\0' && temp[i] != ':')
+            i++;
 
-	temp[i] = '\0';
+        temp[i] = '\0';
+    }
 
     d->name = temp;
     d->type = type;

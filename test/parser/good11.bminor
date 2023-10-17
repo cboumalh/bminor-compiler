@@ -3,6 +3,7 @@ str:string = "this is a string";
 str2:string;
 x:integer;
 main: function void () = {
+	// hello from inside
 	print;
 	print "\n \r \t ";
 	print x, y, "hello", true, false;
