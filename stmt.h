@@ -11,7 +11,11 @@ typedef enum {
 	STMT_FOR,
 	STMT_PRINT,
 	STMT_RETURN,
-	STMT_BLOCK
+	STMT_BLOCK,
+	STMT_WHILE,
+	STMT_IF,
+	STMT_COMMENT,
+	STMT_SEMICOLON
 } stmt_t;
 
 struct stmt {

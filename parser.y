@@ -2,12 +2,12 @@
 %{
   #include <math.h>
   #include <stdio.h>
-  #include "expr.h"
+  #include "decl.h"
   extern int yylex();
   extern int yyparse();
   extern FILE *yyin;
   int yyerror(const char *s);
-
+  struct decl *parser_result = 0;
 %}
 
 
@@ -15,6 +15,9 @@
   struct expr * e;
   struct type * t;
   struct param_list * p;
+  struct decl * d;
+  struct stmt * s;
+  char * c;
 }
 
 %token INDEX_SHIFTER_TOKEN
@@ -75,14 +78,18 @@
 
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
-%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr
+%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr init
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
+%type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
+%type <d> decl file_cmp file_cmp_list
+%type <c> comment
+
 
 
 %%
-program: file_cmp_list {}
-    |
+program: file_cmp_list {  }
+    |                  { }
 
 expr1: expr2 ASSIGN_TOKEN expr1 { $$ = expr_create(EXPR_ASSIGN, $1, $3); } 
     |  expr2                    { $$ = $1; }
@@ -189,67 +196,67 @@ opt_param_list: param_list { $$ = $1; }
     ;
 
 
-init: ASSIGN_TOKEN expr1 {}
-    | ASSIGN_TOKEN OPEN_CURLY_TOKEN opt_expr_list CLOSE_CURLY_TOKEN  {}
-    | 
+init: ASSIGN_TOKEN expr1                                             { $$ = $2; }
+    | ASSIGN_TOKEN OPEN_CURLY_TOKEN opt_expr_list CLOSE_CURLY_TOKEN  { $$ = $3; }
+    |                                                                { $$ = NULL; }
     ;
 
-decl: ID_TOKEN COLON_TOKEN basic_types init SEMICOLON_TOKEN  {}
-    | ID_TOKEN COLON_TOKEN array_type init SEMICOLON_TOKEN  {}
-    | ID_TOKEN COLON_TOKEN function_type ASSIGN_TOKEN OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN {}
-    | ID_TOKEN COLON_TOKEN function_type SEMICOLON_TOKEN
+decl: ID_TOKEN COLON_TOKEN basic_types init SEMICOLON_TOKEN                                             { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
+    | ID_TOKEN COLON_TOKEN array_type init SEMICOLON_TOKEN                                              { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
+    | ID_TOKEN COLON_TOKEN function_type ASSIGN_TOKEN OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN { $$ = decl_create(yytext, $3, NULL, $6, NULL); }
+    | ID_TOKEN COLON_TOKEN function_type SEMICOLON_TOKEN                                                { $$ = decl_create(yytext, $3, NULL, NULL, NULL); }
     ;
 
-comment: CPPCOMMENT_TOKEN
-    | CCOMMENT_TOKEN
-    ;
-
-
-file_cmp: decl
-    | comment
-    ;
-
-file_cmp_list: file_cmp_list file_cmp {}
-    | file_cmp                        {}
+comment: CPPCOMMENT_TOKEN { $$ = NULL; }
+    | CCOMMENT_TOKEN      { $$ = NULL; }
     ;
 
 
-flow_ending_stmt: SEMICOLON_TOKEN
-    | stmt
+file_cmp: decl { $$ = $1; }
+    | comment  { $$ = decl_create(NULL, NULL, NULL, NULL, NULL); }
     ;
 
-flow_ending_if_dangling: SEMICOLON_TOKEN
-    | if_dangling
-    ;
-
-stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_stmt
-    | expr1 SEMICOLON_TOKEN
-    | RETURN opt_expr SEMICOLON_TOKEN
-    | decl
-    | PRINT opt_expr_list SEMICOLON_TOKEN
-    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN
-    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt
-    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_stmt
+file_cmp_list: file_cmp_list file_cmp { $$ = $1; $$->next = $2; }
+    | file_cmp                        { $$ = $1; }
     ;
 
 
-if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dangling
-    | decl
-    | expr1 SEMICOLON_TOKEN
-    | RETURN opt_expr SEMICOLON_TOKEN
-    | PRINT opt_expr_list SEMICOLON_TOKEN
-    | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_if_dangling
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling
-    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN
+flow_ending_stmt: SEMICOLON_TOKEN { $$ = stmt_create(STMT_SEMICOLON, NULL, NULL, NULL, NULL, NULL, NULL, NULL); }
+    | stmt                        { $$ = $1; }
+    ;
+
+flow_ending_if_dangling: SEMICOLON_TOKEN { $$ = stmt_create(STMT_SEMICOLON, NULL, NULL, NULL, NULL, NULL, NULL, NULL); }
+    | if_dangling                        { $$ = $1; }
+    ;
+
+stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_stmt { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL, NULL); }
+    | expr1 SEMICOLON_TOKEN                                                                                              { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL, NULL); }
+    | RETURN opt_expr SEMICOLON_TOKEN                                                                                    { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
+    | decl                                                                                                               { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL, NULL); }
+    | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
+    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN                                                                  { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
+    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt                                                                   { $$ = stmt_create(STMT_IF, NULL, NULL, $3, NULL, $5, NULL, NULL); }
+    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt                                                  { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7, NULL); }
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_stmt                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); }
     ;
 
 
-decl_body: comment
-    | stmt
+if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dangling                                           { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7, NULL); }
+    | decl                                                                                                                      { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL, NULL); }
+    | expr1 SEMICOLON_TOKEN                                                                                                     { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL, NULL); }
+    | RETURN opt_expr SEMICOLON_TOKEN                                                                                           { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
+    | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                       { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
+    | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_if_dangling { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL, NULL); }
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); }
+    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN                                                                         { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
+    ;
 
-decl_body_list: decl_body_list decl_body {}
-    |
+
+decl_body: comment { $$ = stmt_create(STMT_COMMENT, NULL, NULL, NULL, NULL, NULL, NULL, NULL); }
+    | stmt         { $$ = $1; }
+
+decl_body_list: decl_body_list decl_body { $$ = $1; $$->next = $2; }
+    |                                    { $$ = NULL; }
     ;
 
 %%
