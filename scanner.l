@@ -79,12 +79,7 @@ error         .
     return ERROR_TOKEN;
   }
   int token = processIdMatch(yytext);
-  if(token == ID_TOKEN)
-  else{
-    char output[50];
-    toUpperCase(yytext, output);
-  }
-
+ 
   return token;
 }
 

@@ -80,7 +80,7 @@
 
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
-%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr init
+%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr init subscript_list
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
 %type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
@@ -145,10 +145,14 @@ atomic: INT_TOKEN                                                 { $$ = expr_cr
     |   CHAR_TOKEN                                                { $$ = expr_create_char_literal(yytext); } 
     |   OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN                  { $$ = $2; } 
     |   ID_TOKEN OPEN_PARAN_TOKEN opt_expr_list CLOSE_PARAN_TOKEN { $$ = expr_create(EXPR_CALL, expr_create_name(yytext), $3); } 
-    |   ID_TOKEN OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN         { $$ = expr_create(EXPR_SUBSCRIPT, expr_create_name(yytext), $3); } 
+    |   ID_TOKEN subscript_list                                   { $$ = expr_create(EXPR_SUBSCRIPT, expr_create_name(yytext), $2); } 
     ;
 
-expr_list: expr1 COMMA_TOKEN expr_list { $$ = $1; $1->right = $3; } 
+subscript_list: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN subscript_list { $2->right = $4; $$ = $2; }
+    |           OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN                { $$ = expr_create(EXPR_NAME, $2, NULL); }
+    ;
+
+expr_list: expr1 COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
     |      expr1 { $$ = expr_create(EXPR_ARG, $1, NULL); } 
     ;
 
@@ -189,7 +193,7 @@ array_type: ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN all_types { $$ = t
 param: ID_TOKEN COLON_TOKEN all_types { $$ = param_list_create(yytext, $3, NULL); } 
     ;
 
-param_list: param COMMA_TOKEN param_list  { $$ = $1; $1->next = $3; } 
+param_list: param COMMA_TOKEN param_list  { $1->next = $3; $$ = $1;} 
     |       param                         { $$ = $1; }
     ;
 
@@ -199,7 +203,7 @@ opt_param_list: param_list { $$ = $1; }
 
 
 init: ASSIGN_TOKEN expr1                                             { $$ = $2; }
-    | ASSIGN_TOKEN OPEN_CURLY_TOKEN opt_expr_list CLOSE_CURLY_TOKEN  { $$ = $3; }
+    | ASSIGN_TOKEN OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN      { $$ = $3; }
     |                                                                { $$ = NULL; }
     ;
 
@@ -218,7 +222,7 @@ file_body: decl { $$ = $1; }
     | comment  { $$ = decl_create(NULL, NULL, NULL, NULL, NULL); }
     ;
 
-file_body_list: file_body file_body_list { $$ = $1; $$->next = $2; }
+file_body_list: file_body file_body_list { $$->next = $2; $$ = $1; }
     | file_body                          { $$ = $1; }
     ;
 
@@ -257,7 +261,7 @@ if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dan
 decl_body: comment { $$ = stmt_create(STMT_COMMENT, NULL, NULL, NULL, NULL, NULL, NULL, NULL); }
     | stmt         { $$ = $1; }
 
-decl_body_list: decl_body decl_body_list { $$ = $1; $1->next = $2; }
+decl_body_list: decl_body decl_body_list { $1->next = $2; $$ = $1; }
     |                                    { $$ = NULL; }
     ;
 
