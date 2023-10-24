@@ -25,3 +25,8 @@ struct decl * decl_create( char *name, struct type *type, struct expr *value, st
 
     return d;
 }
+
+
+void decl_print( struct decl *d, int indent ){
+
+}

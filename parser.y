@@ -7,6 +7,7 @@
   extern int yyparse();
   extern FILE *yyin;
   int yyerror(const char *s);
+  #include "parser_result.h"
 
   struct decl *parser_result = 0;
 
@@ -79,7 +80,7 @@
 
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
-%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init
+%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init array_init_value_T
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
 %type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
@@ -159,8 +160,10 @@ opt_expr_list: expr_list { $$ = $1; }
     |                    { $$ = NULL; } 
     ;
 
-array_init_value: array_init_value COMMA_TOKEN array_init_value                               { $1->right = $3; $$ = $1; }
-    | OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN                                            { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
+array_init_value: array_init_value COMMA_TOKEN array_init_value_T                              { $1->right = $3; $$ = $1; }
+    | array_init_value_T                                                                       { $$ = $1; }
+
+array_init_value_T: OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN                              { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
     | OPEN_CURLY_TOKEN array_init_value CLOSE_CURLY_TOKEN                                     { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
     ;
 
@@ -210,7 +213,7 @@ basic_init: ASSIGN_TOKEN expr1 { $$ = $2; }
     ;
 
 array_init: ASSIGN_TOKEN array_init_value  { $$ = $2; }
-    |                                                                      { $$ = NULL; }
+    |                                      { $$ = NULL; }
     ;
 
 decl: ID_TOKEN COLON_TOKEN basic_types basic_init SEMICOLON_TOKEN                                       { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
