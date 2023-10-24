@@ -35,7 +35,8 @@ typedef enum {
 	EXPR_FLOAT_LITERAL,
 	EXPR_NAME,
 	EXPR_CHAR_LITERAL,
-	EXPR_ARG
+	EXPR_ARG,
+	EXPR_ARRAY_DECL
 
 } expr_t;
 

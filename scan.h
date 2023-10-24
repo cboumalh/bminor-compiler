@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include "token.h"
 
+#define TOKEN_START 258
+
 int scan(FILE* file){
     yyin = file;
     while(1){
@@ -14,8 +16,10 @@ int scan(FILE* file){
             printf("Scan Failed\n");
             return EXIT_FAILURE;
         }
+        
+        printf("%s\n", TokenNames[token - TOKEN_START]);
     }
-    
+    printf("Scan Succeeded\n");
     return EXIT_SUCCESS;
 }
 

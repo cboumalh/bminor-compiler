@@ -4,7 +4,6 @@
 #define MAX_TOKEN_STR_SZ 300
 
 const char* TokenNames[] = {
-    "INDEX_SHIFTER_TOKEN",
     "NOTHING_TOKEN",
     "CCOMMENT_TOKEN",
     "CPPCOMMENT_TOKEN",
@@ -41,7 +40,24 @@ const char* TokenNames[] = {
     "CLOSE_BRACK_TOKEN",
     "OPEN_CURLY_TOKEN",
     "CLOSE_CURLY_TOKEN",
-    "ASSIGN_TOKEN"
+    "ASSIGN_TOKEN",
+    "ARRAY",
+    "AUTO",
+    "BOOLEAN",
+    "CHAR",
+    "ELSE",
+    "FALSE",
+    "FLOAT",
+    "FOR",
+    "FUNCTION",
+    "IF",
+    "INTEGER",
+    "PRINT",
+    "RETURN",
+    "STRING",
+    "TRUE",
+    "VOID",
+    "WHILE" 
 };
 
 #endif

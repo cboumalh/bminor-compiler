@@ -22,7 +22,6 @@
   char * c;
 }
 
-%token INDEX_SHIFTER_TOKEN
 %token NOTHING_TOKEN
 %token CCOMMENT_TOKEN
 %token CPPCOMMENT_TOKEN
@@ -80,7 +79,7 @@
 
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
-%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr init subscript_list
+%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
 %type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
@@ -149,15 +148,20 @@ atomic: INT_TOKEN                                                 { $$ = expr_cr
     ;
 
 subscript_list: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN subscript_list { $2->right = $4; $$ = $2; }
-    |           OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN                { $$ = expr_create(EXPR_NAME, $2, NULL); }
+    |           OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN                { $$ = expr_create(EXPR_SUBSCRIPT, $2, NULL); }
     ;
 
 expr_list: expr1 COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
-    |      expr1 { $$ = expr_create(EXPR_ARG, $1, NULL); } 
+    |      expr1                       { $$ = expr_create(EXPR_ARG, $1, NULL); } 
     ;
 
 opt_expr_list: expr_list { $$ = $1; } 
     |                    { $$ = NULL; } 
+    ;
+
+array_init_value: array_init_value COMMA_TOKEN array_init_value                               { $1->right = $3; $$ = $1; }
+    | OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN                                            { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
+    | OPEN_CURLY_TOKEN array_init_value CLOSE_CURLY_TOKEN                                     { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
     ;
 
 opt_expr: expr1 { $$ = $1; }
@@ -201,25 +205,27 @@ opt_param_list: param_list { $$ = $1; }
     |                      { $$ = NULL; } 
     ;
 
-
-init: ASSIGN_TOKEN expr1                                             { $$ = $2; }
-    | ASSIGN_TOKEN OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN      { $$ = $3; }
-    |                                                                { $$ = NULL; }
+basic_init: ASSIGN_TOKEN expr1 { $$ = $2; }
+    |                          { $$ = NULL; }
     ;
 
-decl: ID_TOKEN COLON_TOKEN basic_types init SEMICOLON_TOKEN                                             { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
-    | ID_TOKEN COLON_TOKEN array_type init SEMICOLON_TOKEN                                              { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
+array_init: ASSIGN_TOKEN array_init_value  { $$ = $2; }
+    |                                                                      { $$ = NULL; }
+    ;
+
+decl: ID_TOKEN COLON_TOKEN basic_types basic_init SEMICOLON_TOKEN                                       { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
+    | ID_TOKEN COLON_TOKEN array_type array_init SEMICOLON_TOKEN                                        { $$ = decl_create(yytext, $3, $4, NULL, NULL); }
     | ID_TOKEN COLON_TOKEN function_type ASSIGN_TOKEN OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN { $$ = decl_create(yytext, $3, NULL, $6, NULL); }
     | ID_TOKEN COLON_TOKEN function_type SEMICOLON_TOKEN                                                { $$ = decl_create(yytext, $3, NULL, NULL, NULL); }
     ;
 
 comment: CPPCOMMENT_TOKEN { $$ = NULL; }
-    | CCOMMENT_TOKEN      { $$ = NULL; }
+    |    CCOMMENT_TOKEN   { $$ = NULL; }
     ;
 
 
 file_body: decl { $$ = $1; }
-    | comment  { $$ = decl_create(NULL, NULL, NULL, NULL, NULL); }
+    | comment   { $$ = decl_create(NULL, NULL, NULL, NULL, NULL); }
     ;
 
 file_body_list: file_body file_body_list { $$->next = $2; $$ = $1; }
