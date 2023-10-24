@@ -13,7 +13,6 @@ int scan(FILE* file){
         int token = yylex();
         if(!token) break;
         if (token == ERROR_TOKEN) {
-            printf("Scan Failed\n");
             return EXIT_FAILURE;
         }
         

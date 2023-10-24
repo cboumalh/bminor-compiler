@@ -219,6 +219,7 @@ error         .
 }
 
 {error} {
+  printf("Scan Failed\n");
   return ERROR_TOKEN;
 }
 %%
