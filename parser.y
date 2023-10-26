@@ -80,7 +80,7 @@
 
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
-%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init array_init_value_T subscript_list_T
+%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init array_init_value_T subscript_list_T expr_arg
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
 %type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
@@ -172,8 +172,11 @@ subscript_list: subscript_list subscript_list_T    { $$ = expr_create(EXPR_SUBSC
 subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN    { $$ = $2; }
     ;
 
-expr_list: expr1 COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
-    |      expr1                       { $$ = expr_create(EXPR_ARG, $1, NULL); } 
+expr_list: expr_arg COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
+    |      expr_arg                       { $$ = $1; } 
+    ;
+
+expr_arg: expr1 { $$ = expr_create(EXPR_ARG, $1, NULL); } 
     ;
 
 opt_expr_list: expr_list { $$ = $1; } 
@@ -221,7 +224,7 @@ array_type: ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN all_types { $$ = t
 param: ID_TOKEN COLON_TOKEN all_types { $$ = param_list_create($1, $3, NULL); } 
     ;
 
-param_list: param COMMA_TOKEN param_list  { $1->next = $3; $$ = $1;} 
+param_list: param COMMA_TOKEN param_list  { $1->next = $3; $$ = $1; } 
     |       param                         { $$ = $1; }
     ;
 
