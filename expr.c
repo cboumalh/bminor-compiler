@@ -15,13 +15,7 @@ struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right ){
 struct expr * expr_create_name( const char *n ){
 	struct expr * e;
 
-	char *temp =  strdup(n);
-
-	int i = 0;
-	while(temp[i] != '\0' && temp[i] != '[' && temp[i] != '(')
-		i++;
-
-	temp[i] = '\0';
+	char *temp =  strdup(n); 
 
 	e = expr_create(EXPR_NAME, NULL, NULL);
 	e->name = temp;

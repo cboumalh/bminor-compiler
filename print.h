@@ -6,7 +6,12 @@
 
 
 int print(struct decl *parser_result){
-    decl_print(parser_result, 4);
+    
+    while(parser_result){
+        decl_print(parser_result, INDENT);
+        parser_result = parser_result->next;
+    }
+
     return EXIT_SUCCESS;
 }
 

@@ -8,12 +8,6 @@ struct param_list * param_list_create( char *name, struct type *type, struct par
 
     char *temp =  strdup(name);
 
-	int i = 0;
-	while(temp[i] != '\0' && temp[i] != ':')
-		i++;
-
-	temp[i] = '\0';
-
 	p->name = temp;
 	p->type = type;
 	p->next = next;
@@ -22,5 +16,14 @@ struct param_list * param_list_create( char *name, struct type *type, struct par
 }
 
 void param_list_print( struct param_list *a ){
-    return;
+	while(a){
+		printf("%s", a->name);
+		printf(": ");
+		type_print(a->type);
+
+		if(a->next)
+			printf(", ");
+
+		a = a->next;
+	}
 }

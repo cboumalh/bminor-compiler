@@ -7,15 +7,8 @@ struct decl * decl_create( char *name, struct type *type, struct expr *value, st
 
     char *temp =  NULL;
     
-    if(name){
+    if(name)
         temp = strdup(name);
-
-        int i = 0;
-        while(temp[i] != '\0' && temp[i] != ':')
-            i++;
-
-        temp[i] = '\0';
-    }
 
     d->name = temp;
     d->type = type;
@@ -28,5 +21,36 @@ struct decl * decl_create( char *name, struct type *type, struct expr *value, st
 
 
 void decl_print( struct decl *d, int indent ){
+    if(d->name){
+        printf("%s: ", d->name);
+        type_print(d->type);
 
+        if(d->value){
+            printf("= ");
+            expr_print(d->value);
+            printf(";");
+        }
+        else if(d->code){
+            printf("= ");
+            printf("{");
+            
+            struct stmt *code = d->code;
+            while(code){
+                stmt_print(code, indent);
+                code = code->next;
+            }
+            printf("\n}");
+        }
+        else{
+            printf(";");
+        }
+
+        printf("\n");
+    }
+}
+
+void indent_print(int indent){
+    int i;
+    for(i = 0; i < indent; i++)
+        printf(" ");
 }

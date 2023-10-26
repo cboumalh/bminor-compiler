@@ -6,6 +6,7 @@
 #include "stmt.h"
 #include "expr.h"
 #include <stdio.h>
+#define INDENT 4
 
 struct decl {
 	char *name;
@@ -18,6 +19,7 @@ struct decl {
 
 struct decl * decl_create( char *name, struct type *type, struct expr *value, struct stmt *code, struct decl *next );
 void decl_print( struct decl *d, int indent );
+void indent_print(int indent);
 
 #endif
 

@@ -18,7 +18,6 @@ int scan(FILE* file){
         
         printf("%s\n", TokenNames[token - TOKEN_START]);
     }
-    printf("Scan Succeeded\n");
     return EXIT_SUCCESS;
 }
 

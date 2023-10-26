@@ -79,6 +79,8 @@ error         .
     return ERROR_TOKEN;
   }
   int token = processIdMatch(yytext);
+
+  yylval.c = strdup(yytext);
  
   return token;
 }

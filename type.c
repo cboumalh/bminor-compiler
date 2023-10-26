@@ -13,5 +13,30 @@ struct type * type_create( type_t kind, struct type *subtype, struct param_list 
 }
 
 void type_print( struct type *t ){
-    return;
+    if (t->kind == TYPE_VOID)
+        printf("void ");
+    else if (t->kind == TYPE_BOOLEAN)
+        printf("boolean ");
+    else if (t->kind == TYPE_CHARACTER)
+        printf("char ");
+    else if (t->kind == TYPE_INTEGER)
+        printf("integer ");
+    else if (t->kind == TYPE_STRING)
+        printf("string ");
+    else if (t->kind == TYPE_AUTO)
+        printf("auto ");
+    else if (t->kind == TYPE_FLOAT)
+        printf("float ");
+	else if (t->kind == TYPE_ARRAY) {
+        printf("array [] ");
+        type_print(t->subtype);
+	}
+	else if (t->kind == TYPE_FUNCTION){
+        printf("function ");
+		type_print(t->subtype);
+		printf("( ");
+		param_list_print(t->params);
+		printf(") ");
+	}
+
 }
