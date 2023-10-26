@@ -102,43 +102,43 @@ expr2: expr2 OR_TOKEN expr3 { $$ = expr_create(EXPR_OR, $1, $3); }
 expr3: expr3 AND_TOKEN expr4 { $$ = expr_create(EXPR_AND, $1, $3); } 
     |  expr4                 { $$ = $1; }
 
-expr4: expr4 NOT_EQUAL_TOKEN expr5     { expr_create(EXPR_NOT_EQUAL, $1, $3); } 
-    |  expr4 LESS_TOKEN expr5          { expr_create(EXPR_LESS, $1, $3); } 
-    |  expr4 LESS_OR_EQ_TOKEN expr5    { expr_create(EXPR_LESS_OR_EQ, $1, $3); } 
-    |  expr4 GREATER_TOKEN expr5       { expr_create(EXPR_GREATER, $1, $3); } 
-    |  expr4 GREATER_OR_EQ_TOKEN expr5 { expr_create(EXPR_GREATER_OR_EQ, $1, $3); } 
-    |  expr4 ASSERT_EQ_TOKEN expr5     { expr_create(EXPR_EQ, $1, $3); } 
+expr4: expr4 NOT_EQUAL_TOKEN expr5     { $$ = expr_create(EXPR_NOT_EQUAL, $1, $3); } 
+    |  expr4 LESS_TOKEN expr5          { $$ = expr_create(EXPR_LESS, $1, $3); } 
+    |  expr4 LESS_OR_EQ_TOKEN expr5    { $$ = expr_create(EXPR_LESS_OR_EQ, $1, $3); } 
+    |  expr4 GREATER_TOKEN expr5       { $$ = expr_create(EXPR_GREATER, $1, $3); } 
+    |  expr4 GREATER_OR_EQ_TOKEN expr5 { $$ = expr_create(EXPR_GREATER_OR_EQ, $1, $3); } 
+    |  expr4 ASSERT_EQ_TOKEN expr5     { $$ = expr_create(EXPR_EQ, $1, $3); } 
     |  expr5                           { $$ = $1; } 
 
-expr5: expr5 ADDITION_TOKEN expr6    { expr_create(EXPR_ADD, $1, $3); } 
-    |  expr5 SUBTRACTION_TOKEN expr6 { expr_create(EXPR_SUB, $1, $3); } 
+expr5: expr5 ADDITION_TOKEN expr6    { $$ = expr_create(EXPR_ADD, $1, $3); } 
+    |  expr5 SUBTRACTION_TOKEN expr6 { $$ = expr_create(EXPR_SUB, $1, $3); } 
     |  expr6                         { $$ = $1; } 
 
-expr6: expr6 MULTIPLY_TOKEN expr7 { expr_create(EXPR_MUL, $1, $3); } 
-    |  expr6 DIVISION_TOKEN expr7 { expr_create(EXPR_DIV, $1, $3); } 
-    |  expr6 MODULO_TOKEN expr7   { expr_create(EXPR_MODULO, $1, $3); } 
+expr6: expr6 MULTIPLY_TOKEN expr7 { $$ = expr_create(EXPR_MUL, $1, $3); } 
+    |  expr6 DIVISION_TOKEN expr7 { $$ = expr_create(EXPR_DIV, $1, $3); } 
+    |  expr6 MODULO_TOKEN expr7   { $$ = expr_create(EXPR_MODULO, $1, $3); } 
     |  expr7                      { $$ = $1; } 
 
-expr7: expr8 POWER_TOKEN expr7  { expr_create(EXPR_POWER, $1, $3); }
+expr7: expr8 POWER_TOKEN expr7  { $$ = expr_create(EXPR_POWER, $1, $3); }
     |  expr8                    { $$ = $1; }
     ;
 
-expr8: SUBTRACTION_TOKEN expr8 { expr_create(EXPR_UNARY, $2, NULL); } 
-    |  ADDITION_TOKEN expr8    { expr_create(EXPR_PLUS, $2, NULL); }
-    |  NOT_TOKEN expr8         { expr_create(EXPR_NOT, $2, NULL); } 
+expr8: SUBTRACTION_TOKEN expr9 { $$ = expr_create(EXPR_UNARY, NULL, $2); } 
+    |  ADDITION_TOKEN expr9    { $$ = expr_create(EXPR_PLUS, NULL, $2); }
+    |  NOT_TOKEN expr9         { $$ = expr_create(EXPR_NOT, NULL, $2); } 
     |  expr9                   { $$ = $1; } 
     ;
 
-expr9: expr9 INCREMENT_TOKEN { expr_create(EXPR_INCREMENT, $1, NULL); } 
-    |  expr9 DECREMENT_TOKEN { expr_create(EXPR_DECREMENT, $1, NULL); } 
-    |  INCREMENT_TOKEN expr9 { expr_create(EXPR_INCREMENT, $2, NULL); } 
-    |  DECREMENT_TOKEN expr9 { expr_create(EXPR_DECREMENT, $2, NULL); } 
-    |  atomic                { $$ = $1; }
+expr9: atomic INCREMENT_TOKEN { $$ = expr_create(EXPR_INCREMENT, $1, NULL); } 
+    |  atomic DECREMENT_TOKEN { $$ = expr_create(EXPR_DECREMENT, $1, NULL); } 
+    |  INCREMENT_TOKEN atomic { $$ = expr_create(EXPR_INCREMENT, NULL, $2); } 
+    |  DECREMENT_TOKEN atomic { $$ = expr_create(EXPR_DECREMENT, NULL, $2); } 
+    |  atomic                 { $$ = $1; }
     ;
 
 atomic: INT_TOKEN                                                 { $$ = expr_create_integer_literal(atoi(yytext)); } 
     |   FLOAT_TOKEN                                               { $$ = expr_create_float_literal(atof(yytext)); }
-    |   ID_TOKEN                                                  { $$ = expr_create_name(yytext); }  
+    |   ID_TOKEN                                                  { $$ = expr_create_name($1); }  
     |   STRING_TOKEN                                              { $$ = expr_create_string_literal(yytext); } 
     |   FALSE                                                     { $$ = expr_create_boolean_literal(0); } 
     |   TRUE                                                      { $$ = expr_create_boolean_literal(1); } 

@@ -19,111 +19,115 @@ struct stmt * stmt_create( stmt_t kind, struct decl *decl, struct expr *init_exp
 }
 
 void stmt_print( struct stmt *s, int indent ){
-    if(s->kind == STMT_DECL){
-        printf("\n");
-        indent_print(indent);
+    if(s){
+        if(s->kind == STMT_DECL){
+            printf("\n");
+            indent_print(indent);
 
-        decl_print(s->decl, indent);
-    }
-
-    else if(s->kind == STMT_EXPR){
-        printf("\n");
-        indent_print(indent);
-
-        expr_print(s->expr);
-    }
-
-    else if(s->kind == STMT_IF_ELSE){
-        printf("\n");
-        indent_print(indent);
-
-        printf("if(");
-        expr_print(s->expr);
-        printf(")");
-
-        stmt_print(s->body, indent + INDENT);
-
-        printf("\n");
-        indent_print(indent);
-        printf("else");
-
-        stmt_print(s->else_body, indent + INDENT);
-    }
-
-    else if(s->kind == STMT_FOR){
-        printf("\n");
-        indent_print(indent);
-
-        printf("for(");
-        expr_print(s->init_expr);
-        printf(";");
-        expr_print(s->expr);
-        printf(";");
-        expr_print(s->next_expr);
-        printf(")");
-
-        stmt_print(s->body, indent + INDENT);
-    }
-
-    else if(s->kind == STMT_PRINT){
-        printf("\n");
-        indent_print(indent);
-
-        printf("print ");
-        struct expr *expr_list = s->expr;
-        while(expr_list){
-            expr_print(expr_list);
-            expr_list = expr_list->right;
+            decl_print(s->decl, indent);
         }
 
-        printf(";");
+        else if(s->kind == STMT_EXPR){
+            printf("\n");
+            indent_print(indent);
 
-    }
+            expr_print(s->expr);
 
-    else if(s->kind == STMT_RETURN){
-        printf("\n");
-        indent_print(indent);
-
-        printf("return ");
-
-        expr_print(s->expr);
-
-        printf(";");
-
-    }
-
-    else if(s->kind == STMT_BLOCK){
-        printf("{");
-        while(s){
-            stmt_print(s->body, indent);
-            s = s->next;
+            printf(";");
         }
-        printf("\n}");
-    }
 
-    else if(s->kind == STMT_WHILE){
-        printf("\n");
-        indent_print(indent);
+        else if(s->kind == STMT_IF_ELSE){
+            printf("\n");
+            indent_print(indent);
 
-        printf("while(");
-        expr_print(s->expr);
-        printf(")");
+            printf("if(");
+            expr_print(s->expr);
+            printf(")");
 
-        stmt_print(s->body, indent + INDENT);
-    }
+            stmt_print(s->body, indent + INDENT);
 
-    else if(s->kind == STMT_IF){
-        printf("\n");
-        indent_print(indent);
+            printf("\n");
+            indent_print(indent);
+            printf("else");
 
-        printf("if(");
-        expr_print(s->expr);
-        printf(")");
+            stmt_print(s->else_body, indent + INDENT);
+        }
 
-        stmt_print(s->body, indent + INDENT);
-    }
+        else if(s->kind == STMT_FOR){
+            printf("\n");
+            indent_print(indent);
 
-    else if(s->kind == STMT_SEMICOLON){
-        printf(";");
+            printf("for(");
+            expr_print(s->init_expr);
+            printf(";");
+            expr_print(s->expr);
+            printf(";");
+            expr_print(s->next_expr);
+            printf(")");
+
+            stmt_print(s->body, indent + INDENT);
+        }
+
+        else if(s->kind == STMT_PRINT){
+            printf("\n");
+            indent_print(indent);
+
+            printf("print ");
+            struct expr *expr_list = s->expr;
+            while(expr_list){
+                expr_print(expr_list);
+                expr_list = expr_list->right;
+            }
+
+            printf(";");
+
+        }
+
+        else if(s->kind == STMT_RETURN){
+            printf("\n");
+            indent_print(indent);
+
+            printf("return ");
+
+            expr_print(s->expr);
+
+            printf(";");
+
+        }
+
+        else if(s->kind == STMT_BLOCK){
+            printf("{");
+            while(s){
+                stmt_print(s->body, indent);
+                s = s->next;
+            }
+            printf("\n}");
+        }
+
+        else if(s->kind == STMT_WHILE){
+            printf("\n");
+            indent_print(indent);
+
+            printf("while(");
+            expr_print(s->expr);
+            printf(")");
+
+            stmt_print(s->body, indent + INDENT);
+        }
+
+        else if(s->kind == STMT_IF){
+            printf("\n");
+            indent_print(indent);
+
+            printf("if(");
+            expr_print(s->expr);
+            printf(")");
+
+            stmt_print(s->body, indent + INDENT);
+        }
+
+        else if(s->kind == STMT_SEMICOLON){
+            printf(";");
+        }
     }
 }

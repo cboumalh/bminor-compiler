@@ -32,7 +32,7 @@ void decl_print( struct decl *d, int indent ){
         }
         else if(d->code){
             printf("= ");
-            printf("{");
+            printf("{\n");
             
             struct stmt *code = d->code;
             while(code){
