@@ -247,8 +247,18 @@ void expr_print( struct expr *e ){
 		else if(e->kind == EXPR_ARRAY_DECL){
 			printf("{");
 			expr_print(e->left);
-			expr_print(e->right);
 			printf("}");
+			if(e->right)
+				printf(",");
+			expr_print(e->right);
+		}
+		else if(e->kind == EXPR_ONE_D_ARR){
+			printf("{");
+			expr_print(e->left);
+			printf("}");
+			if(e->right)
+				printf(",");
+			expr_print(e->right);
 		}
 
 	}

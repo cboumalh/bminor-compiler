@@ -63,3 +63,34 @@ do
 	fi
 done
 
+# printer
+for testfile in ./test/printer/good*.bminor
+do
+	if ./bminor --print $testfile > $testfile.out
+	then
+		echo "$testfile success (as expected)"
+	else
+		echo "$testfile failure (INCORRECT)"
+	fi
+done
+
+for testfile in ./test/printer/good*.bminor.out
+do
+	if ./bminor --print $testfile > $testfile.2.out
+	then
+		echo "$testfile success (as expected)"
+	else
+		echo "$testfile failure (INCORRECT)"
+	fi
+done
+
+for testfile in ./test/printer/bad*.bminor
+do
+	if ./bminor --print $testfile > $testfile.out
+	then
+		echo "$testfile success (INCORRECT)"
+	else
+		echo "$testfile failure (as expected)"
+	fi
+done
+

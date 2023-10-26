@@ -74,11 +74,7 @@ void stmt_print( struct stmt *s, int indent ){
 
             printf("print ");
             struct expr *expr_list = s->expr;
-            while(expr_list){
-                expr_print(expr_list);
-                expr_list = expr_list->right;
-            }
-
+            expr_print(expr_list);
             printf(";");
 
         }
@@ -101,7 +97,10 @@ void stmt_print( struct stmt *s, int indent ){
                 stmt_print(s->body, indent);
                 s = s->next;
             }
-            printf("\n}");
+
+            printf("\n");
+            indent_print(indent - INDENT);
+            printf("}");
         }
 
         else if(s->kind == STMT_WHILE){

@@ -187,7 +187,7 @@ array_init_value: array_init_value_T COMMA_TOKEN array_init_value               
     | array_init_value_T                                                                       { $$ = $1; }
     ;
 
-array_init_value_T: OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN                              { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
+array_init_value_T: OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN                              { $$ = expr_create(EXPR_ONE_D_ARR, $2, NULL); }
     | OPEN_CURLY_TOKEN array_init_value CLOSE_CURLY_TOKEN                                     { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
     ;
 
