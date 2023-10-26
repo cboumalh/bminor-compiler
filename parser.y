@@ -195,30 +195,30 @@ opt_expr: expr1 { $$ = $1; }
     |           { $$ = NULL; }
     ;
 
-all_types: AUTO     { $$ = type_create(TYPE_AUTO, NULL, NULL); } 
-    | BOOLEAN       { $$ = type_create(TYPE_BOOLEAN, NULL, NULL); } 
-    | CHAR          { $$ = type_create(TYPE_CHARACTER, NULL, NULL); } 
-    | FLOAT         { $$ = type_create(TYPE_FLOAT, NULL, NULL); }
-    | VOID          { $$ = type_create(TYPE_VOID, NULL, NULL); } 
-    | INTEGER       { $$ = type_create(TYPE_INTEGER, NULL, NULL); } 
-    | STRING        { $$ = type_create(TYPE_STRING, NULL, NULL); } 
+all_types: AUTO     { $$ = type_create(TYPE_AUTO, NULL, NULL, NULL); } 
+    | BOOLEAN       { $$ = type_create(TYPE_BOOLEAN, NULL, NULL, NULL); } 
+    | CHAR          { $$ = type_create(TYPE_CHARACTER, NULL, NULL, NULL); } 
+    | FLOAT         { $$ = type_create(TYPE_FLOAT, NULL, NULL, NULL); }
+    | VOID          { $$ = type_create(TYPE_VOID, NULL, NULL, NULL); } 
+    | INTEGER       { $$ = type_create(TYPE_INTEGER, NULL, NULL, NULL); } 
+    | STRING        { $$ = type_create(TYPE_STRING, NULL, NULL, NULL); } 
     | function_type { $$ = $1; }
     | array_type    { $$ = $1; }
     ;
 
-basic_types: AUTO  { $$ = type_create(TYPE_AUTO, NULL, NULL); } 
-    | BOOLEAN      { $$ = type_create(TYPE_BOOLEAN, NULL, NULL); } 
-    | CHAR         { $$ = type_create(TYPE_CHARACTER, NULL, NULL); } 
-    | FLOAT        { $$ = type_create(TYPE_FLOAT, NULL, NULL); }
-    | VOID         { $$ = type_create(TYPE_VOID, NULL, NULL); } 
-    | INTEGER      { $$ = type_create(TYPE_INTEGER, NULL, NULL); } 
-    | STRING       { $$ = type_create(TYPE_STRING, NULL, NULL); } 
+basic_types: AUTO  { $$ = type_create(TYPE_AUTO, NULL, NULL, NULL); } 
+    | BOOLEAN      { $$ = type_create(TYPE_BOOLEAN, NULL, NULL, NULL); } 
+    | CHAR         { $$ = type_create(TYPE_CHARACTER, NULL, NULL, NULL); } 
+    | FLOAT        { $$ = type_create(TYPE_FLOAT, NULL, NULL, NULL); }
+    | VOID         { $$ = type_create(TYPE_VOID, NULL, NULL, NULL); } 
+    | INTEGER      { $$ = type_create(TYPE_INTEGER, NULL, NULL, NULL); } 
+    | STRING       { $$ = type_create(TYPE_STRING, NULL, NULL, NULL); } 
     ;
 
-function_type: FUNCTION all_types OPEN_PARAN_TOKEN opt_param_list CLOSE_PARAN_TOKEN { $$ = type_create(TYPE_FUNCTION, $2, $4); } 
+function_type: FUNCTION all_types OPEN_PARAN_TOKEN opt_param_list CLOSE_PARAN_TOKEN { $$ = type_create(TYPE_FUNCTION, $2, $4, NULL); } 
     ;
 
-array_type: ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN all_types { $$ = type_create(TYPE_ARRAY, $5, NULL); }
+array_type: ARRAY OPEN_BRACK_TOKEN opt_expr CLOSE_BRACK_TOKEN all_types { $$ = type_create(TYPE_ARRAY, $5, NULL, $3); }
     ;
 
 param: ID_TOKEN COLON_TOKEN all_types { $$ = param_list_create($1, $3, NULL); } 

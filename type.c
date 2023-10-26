@@ -1,6 +1,6 @@
 #include "type.h"
 
-struct type * type_create( type_t kind, struct type *subtype, struct param_list *params ){
+struct type * type_create( type_t kind, struct type *subtype, struct param_list *params, struct expr *size){
 	struct type * t = calloc(1, sizeof(struct type));
 
 	memset(t, 0, sizeof(struct type));
@@ -8,6 +8,7 @@ struct type * type_create( type_t kind, struct type *subtype, struct param_list 
 	t->kind = kind;
 	t->subtype = subtype;
 	t->params = params;
+    t->size = size;
 
 	return t;
 }
@@ -28,7 +29,9 @@ void type_print( struct type *t ){
     else if (t->kind == TYPE_FLOAT)
         printf("float ");
 	else if (t->kind == TYPE_ARRAY) {
-        printf("array [] ");
+        printf("array [");
+        expr_print(t->size);
+        printf("] ");
         type_print(t->subtype);
 	}
 	else if (t->kind == TYPE_FUNCTION){
