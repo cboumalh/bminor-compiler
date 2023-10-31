@@ -93,10 +93,8 @@ void stmt_print( struct stmt *s, int indent ){
 
         else if(s->kind == STMT_BLOCK){
             printf("{");
-            while(s){
-                stmt_print(s->body, indent);
-                s = s->next;
-            }
+            stmt_print(s->body, indent);
+            stmt_print(s->body->next, indent);
 
             printf("\n");
             indent_print(indent - INDENT);
@@ -110,6 +108,7 @@ void stmt_print( struct stmt *s, int indent ){
             printf("while(");
             expr_print(s->expr);
             printf(")");
+
 
             stmt_print(s->body, indent + INDENT);
         }
