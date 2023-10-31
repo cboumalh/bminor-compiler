@@ -152,6 +152,7 @@ atomic: INT_TOKEN                                                 { $$ = expr_cr
     |   CHAR_TOKEN                                                { $$ = expr_create_char_literal(yytext); } 
     |   OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN                  { $$ = $2; } 
     |   ID_TOKEN OPEN_PARAN_TOKEN opt_expr_list CLOSE_PARAN_TOKEN { $$ = expr_create(EXPR_CALL, expr_create_name($1), $3); }
+    |   array_access                                              { $$ = expr_create(EXPR_SUBSCRIPT, NULL, $1); }
     ;
    
 
@@ -192,8 +193,7 @@ subscript_list: subscript_list subscript_list_T    { struct expr * e = expr_crea
     | subscript_list_T                             { $$ = $1; }
     ;   
 
-subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN           { $$ = $2; }
-    |             OPEN_BRACK_TOKEN array_access CLOSE_BRACK_TOKEN    { $$ = expr_create(EXPR_SUBSCRIPT, NULL, $2);   }     
+subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN           { $$ = $2; } 
     ;
 
 expr_list: expr_arg COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
