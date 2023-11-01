@@ -80,10 +80,10 @@
 
 %nonassoc   INCREMENT_TOKEN DECREMENT_TOKEN 
 
-%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init array_init_value_T subscript_list_T expr_arg
+%type <e> expr1 expr2 expr3 expr4 expr5 expr6 expr7 expr8 expr9 atomic expr_list opt_expr_list opt_expr subscript_list array_init_value basic_init array_init array_init_value_T subscript_list_T expr_arg array_access
 %type <p> param param_list opt_param_list
 %type <t> all_types basic_types function_type array_type
-%type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list
+%type <s> decl_body if_dangling stmt flow_ending_if_dangling flow_ending_stmt decl_body_list opt_decl_body_list
 %type <d> decl file_body file_body_list
 %type <c> comment
 
@@ -92,15 +92,19 @@
 %%
 program: file_body_list { parser_result = $1; }
     |                   { parser_result = NULL; }
+    ;
 
-expr1: expr2 ASSIGN_TOKEN expr1 { $$ = expr_create(EXPR_ASSIGN, $1, $3); } 
-    |  expr2                    { $$ = $1; }
+expr1: expr2 ASSIGN_TOKEN expr1  { $$ = expr_create(EXPR_ASSIGN, $1, $3); } 
+    |  expr2                     { $$ = $1; }
+    ;
 
 expr2: expr2 OR_TOKEN expr3 { $$ = expr_create(EXPR_OR, $1, $3); } 
     |  expr3                { $$ = $1; } 
+    ;
 
 expr3: expr3 AND_TOKEN expr4 { $$ = expr_create(EXPR_AND, $1, $3); } 
     |  expr4                 { $$ = $1; }
+    ;
 
 expr4: expr4 NOT_EQUAL_TOKEN expr5     { $$ = expr_create(EXPR_NOT_EQUAL, $1, $3); } 
     |  expr4 LESS_TOKEN expr5          { $$ = expr_create(EXPR_LESS, $1, $3); } 
@@ -109,15 +113,18 @@ expr4: expr4 NOT_EQUAL_TOKEN expr5     { $$ = expr_create(EXPR_NOT_EQUAL, $1, $3
     |  expr4 GREATER_OR_EQ_TOKEN expr5 { $$ = expr_create(EXPR_GREATER_OR_EQ, $1, $3); } 
     |  expr4 ASSERT_EQ_TOKEN expr5     { $$ = expr_create(EXPR_EQ, $1, $3); } 
     |  expr5                           { $$ = $1; } 
+    ;
 
 expr5: expr5 ADDITION_TOKEN expr6    { $$ = expr_create(EXPR_ADD, $1, $3); } 
     |  expr5 SUBTRACTION_TOKEN expr6 { $$ = expr_create(EXPR_SUB, $1, $3); } 
     |  expr6                         { $$ = $1; } 
+    ;
 
 expr6: expr6 MULTIPLY_TOKEN expr7 { $$ = expr_create(EXPR_MUL, $1, $3); } 
     |  expr6 DIVISION_TOKEN expr7 { $$ = expr_create(EXPR_DIV, $1, $3); } 
     |  expr6 MODULO_TOKEN expr7   { $$ = expr_create(EXPR_MODULO, $1, $3); } 
     |  expr7                      { $$ = $1; } 
+    ;
 
 expr7: expr8 POWER_TOKEN expr7  { $$ = expr_create(EXPR_POWER, $1, $3); }
     |  expr8                    { $$ = $1; }
@@ -145,31 +152,48 @@ atomic: INT_TOKEN                                                 { $$ = expr_cr
     |   CHAR_TOKEN                                                { $$ = expr_create_char_literal(yytext); } 
     |   OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN                  { $$ = $2; } 
     |   ID_TOKEN OPEN_PARAN_TOKEN opt_expr_list CLOSE_PARAN_TOKEN { $$ = expr_create(EXPR_CALL, expr_create_name($1), $3); }
-    |   ID_TOKEN subscript_list                                   {
-                                                                    struct expr * e = $2;
-                                                                    struct expr * fixed_e = e;
+    |   array_access                                              { $$ = expr_create(EXPR_SUBSCRIPT, NULL, $1); }
+    ;
+   
 
-                                                                    if(e->kind == EXPR_SUBSCRIPT){
-                                                                        while(e->left && e->left->kind == EXPR_SUBSCRIPT)
-                                                                            e = e->left;
+array_access: ID_TOKEN subscript_list {
+                                          struct expr * e = $2;
+                                          struct expr * fixed_e = e;
 
-                                                                        struct expr * val = e->left;
+                                          if(e->kind == EXPR_SUBSCRIPT){
+                                              while(e->left && e->left->kind == EXPR_SUBSCRIPT)
+                                                  e = e->left;
 
-                                                                        e->left = expr_create(EXPR_SUBSCRIPT, expr_create_name($1), val);
+                                              struct expr * val = e->left;
+                                            
+                                              if(val)
+                                                e->left = expr_create(EXPR_SUBSCRIPT, expr_create_name($1), val);
+                                              else
+                                                 e->left = expr_create_name($1);
 
-                                                                        $$ = fixed_e;  
-                                                                    }
-                                                                    else{
-                                                                        $$ = expr_create(EXPR_SUBSCRIPT, expr_create_name($1), $2);
-                                                                    }
-                                                                  }
+                                              $$ = fixed_e;  
+                                          }
+                                          else{
+                                              $$ = expr_create(EXPR_SUBSCRIPT, expr_create_name($1), $2);
+                                          }
+                                      }
     ;
 
-subscript_list: subscript_list subscript_list_T    { $$ = expr_create(EXPR_SUBSCRIPT, $1, $2); }
+subscript_list: subscript_list subscript_list_T    { struct expr * e = expr_create(EXPR_SUBSCRIPT, $1, $2); 
+                                                     struct expr * fixed_e = e;
+                                                     while(e->right->kind == EXPR_SUBSCRIPT && e->right->left == NULL){
+                                                        struct expr *temp = e->right;
+                                                        e->right = e->right->right;
+                                                        free(temp);
+                                                    }
+
+                                                     $$ = fixed_e;
+                                                   }
+
     | subscript_list_T                             { $$ = $1; }
     ;   
 
-subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN    { $$ = $2; }
+subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN           { $$ = $2; } 
     ;
 
 expr_list: expr_arg COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
@@ -273,7 +297,7 @@ stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt
     | RETURN opt_expr SEMICOLON_TOKEN                                                                                    { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | decl                                                                                                               { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL, NULL); }
     | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
-    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN                                                                  { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
+    | OPEN_CURLY_TOKEN opt_decl_body_list CLOSE_CURLY_TOKEN                                                              { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
     | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt                                                                   { $$ = stmt_create(STMT_IF, NULL, NULL, $3, NULL, $5, NULL, NULL); }
     | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt                                                  { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7, NULL); }
     | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_stmt                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); }
@@ -287,15 +311,20 @@ if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dan
     | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                       { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_if_dangling { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL, NULL); }
     | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); } 
-    | OPEN_CURLY_TOKEN decl_body_list CLOSE_CURLY_TOKEN                                                                         { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
+    | OPEN_CURLY_TOKEN opt_decl_body_list CLOSE_CURLY_TOKEN                                                                     { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
     ;
 
 
 decl_body: comment { $$ = stmt_create(STMT_COMMENT, NULL, NULL, NULL, NULL, NULL, NULL, NULL); }
     | stmt         { $$ = $1; }
-
+    ;
+    
 decl_body_list: decl_body decl_body_list { $1->next = $2; $$ = $1; }
-    |                                    { $$ = NULL; }
+    | decl_body                          { $$ = $1; }
+    ;
+
+opt_decl_body_list: decl_body_list  { $$ = $1; }
+    |                               { $$ = NULL; }
     ;
 
 %%

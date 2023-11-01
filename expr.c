@@ -232,9 +232,14 @@ void expr_print( struct expr *e ){
 
 		else if(e->kind == EXPR_SUBSCRIPT){
 			expr_print(e->left);
-			printf("[");
+
+			if(e->left)
+				printf("[");
+
 			expr_print(e->right);
-			printf("]");
+
+			if(e->left)
+				printf("]");
 		}
 
 		else if(e->kind == EXPR_ARG){
