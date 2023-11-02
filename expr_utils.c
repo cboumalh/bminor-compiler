@@ -69,8 +69,9 @@ struct expr* remove_redundant_paren(struct expr * e){
         e = e->right;
 
     push(&myStack, e);
-        
+    
     while(!isEmpty(&myStack)){
+
         struct expr *top = pop(&myStack);
         if(is_atomic(top)) continue;
 
@@ -84,19 +85,17 @@ struct expr* remove_redundant_paren(struct expr * e){
         while(right && right->kind == EXPR_PARAN && right->right->kind == EXPR_PARAN)
             right->right = right->right->right;
         
-
         // remove parantheses around atomics
-        if(right->kind == EXPR_PARAN && is_atomic(right->right)) 
+        if(right && right->kind == EXPR_PARAN && is_atomic(right->right)) 
             top->right = right->right;
         if(left && left->kind == EXPR_PARAN && is_atomic(left->right))
             top->left = left->right;
-
 
         //check precedences and remove parantheses based on it
         left = top->left;
         right = top->right;
 
-        if(right->kind == EXPR_PARAN && precedence[top->kind] <= precedence[right->right->kind])
+        if(right && right->kind == EXPR_PARAN && precedence[top->kind] <= precedence[right->right->kind])
             top->right = right->right;
         if(left && left->kind == EXPR_PARAN && precedence[top->kind] <= precedence[left->right->kind])
             top->left = left->right;

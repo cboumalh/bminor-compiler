@@ -131,17 +131,17 @@ expr7: expr8 POWER_TOKEN expr7  { $$ = expr_create(EXPR_POWER, $1, $3); }
     |  expr8                    { $$ = $1; }
     ;
 
-expr8: SUBTRACTION_TOKEN expr9 { $$ = expr_create(EXPR_UNARY, NULL, $2); } 
-    |  ADDITION_TOKEN expr9    { $$ = expr_create(EXPR_PLUS, NULL, $2); }
-    |  NOT_TOKEN expr9         { $$ = expr_create(EXPR_NOT, NULL, $2); } 
+expr8: SUBTRACTION_TOKEN expr8 { $$ = expr_create(EXPR_UNARY, NULL, $2); } 
+    |  ADDITION_TOKEN expr8    { $$ = expr_create(EXPR_PLUS, NULL, $2); }
+    |  NOT_TOKEN expr8         { $$ = expr_create(EXPR_NOT, NULL, $2); } 
     |  expr9                   { $$ = $1; } 
     ;
 
-expr9: atomic INCREMENT_TOKEN { $$ = expr_create(EXPR_INCREMENT, $1, NULL); } 
-    |  atomic DECREMENT_TOKEN { $$ = expr_create(EXPR_DECREMENT, $1, NULL); } 
-    |  INCREMENT_TOKEN atomic { $$ = expr_create(EXPR_INCREMENT, NULL, $2); } 
-    |  DECREMENT_TOKEN atomic { $$ = expr_create(EXPR_DECREMENT, NULL, $2); } 
-    |  atomic                 { $$ = $1; }
+expr9: expr9 INCREMENT_TOKEN { $$ = expr_create(EXPR_INCREMENT, $1, NULL); } 
+    |  expr9 DECREMENT_TOKEN { $$ = expr_create(EXPR_DECREMENT, $1, NULL); } 
+    |  INCREMENT_TOKEN expr9 { $$ = expr_create(EXPR_INCREMENT, NULL, $2); } 
+    |  DECREMENT_TOKEN expr9 { $$ = expr_create(EXPR_DECREMENT, NULL, $2); } 
+    |  atomic                { $$ = $1; }
     ;
 
 atomic: INT_TOKEN                                                 { $$ = expr_create_integer_literal(atoi(yytext)); } 
