@@ -52,3 +52,4 @@ char strtochar(const char* str){
         return '\0';
     }
 }
+

@@ -17,12 +17,12 @@ TYPE = type
 PARAM_LIST = param_list
 STMT = stmt
 DECL = decl
-
+EXPR_UTIL = expr_utils
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
 
-$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o
-	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o
+$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o
+	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o
 
 $(LEX).c: $(SCANNER).l $(PARSER).tab.h
 	$(FL) $(SCANNER).l
@@ -53,6 +53,9 @@ $(DECL).o: $(DECL).c $(DECL).h
 
 $(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h $(PARSE).h
 	$(CMP) $(CFLAGS) -c $(MAIN).c -o $(MAIN).o
+
+$(EXPR_UTIL).o: $(EXPR_UTIL).c $(EXPR_UTIL).h
+	$(CMP) $(CFLAGS) -c $(EXPR_UTIL).c -o $(EXPR_UTIL).o
 
 test: $(EXEC)
 	sh runtest.sh

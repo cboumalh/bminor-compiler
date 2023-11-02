@@ -8,6 +8,7 @@
   extern FILE *yyin;
   int yyerror(const char *s);
   #include "parser_result.h"
+  #include "utils.h"
 
   struct decl *parser_result = 0;
 
@@ -150,7 +151,7 @@ atomic: INT_TOKEN                                                 { $$ = expr_cr
     |   FALSE                                                     { $$ = expr_create_boolean_literal(0); } 
     |   TRUE                                                      { $$ = expr_create_boolean_literal(1); } 
     |   CHAR_TOKEN                                                { $$ = expr_create_char_literal(yytext); } 
-    |   OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN                  { $$ = $2; } 
+    |   OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN                  { $$ = expr_create(EXPR_PARAN, NULL, $2); } 
     |   ID_TOKEN OPEN_PARAN_TOKEN opt_expr_list CLOSE_PARAN_TOKEN { $$ = expr_create(EXPR_CALL, expr_create_name($1), $3); }
     |   array_access                                              { $$ = expr_create(EXPR_SUBSCRIPT, NULL, $1); }
     ;
@@ -193,14 +194,14 @@ subscript_list: subscript_list subscript_list_T    { struct expr * e = expr_crea
     | subscript_list_T                             { $$ = $1; }
     ;   
 
-subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN           { $$ = $2; } 
+subscript_list_T: OPEN_BRACK_TOKEN expr1 CLOSE_BRACK_TOKEN           { $$ = remove_redundant_paren($2); } 
     ;
 
 expr_list: expr_arg COMMA_TOKEN expr_list { $1->right = $3; $$ = $1; } 
     |      expr_arg                       { $$ = $1; } 
     ;
 
-expr_arg: expr1 { $$ = expr_create(EXPR_ARG, $1, NULL); } 
+expr_arg: expr1 { $$ = expr_create(EXPR_ARG, remove_redundant_paren($1), NULL); } 
     ;
 
 opt_expr_list: expr_list { $$ = $1; } 
@@ -215,7 +216,7 @@ array_init_value_T: OPEN_CURLY_TOKEN expr_list CLOSE_CURLY_TOKEN                
     | OPEN_CURLY_TOKEN array_init_value CLOSE_CURLY_TOKEN                                     { $$ = expr_create(EXPR_ARRAY_DECL, $2, NULL); }
     ;
 
-opt_expr: expr1 { $$ = $1; }
+opt_expr: expr1 { $$ = remove_redundant_paren($1); }
     |           { $$ = NULL; }
     ;
 
@@ -256,7 +257,7 @@ opt_param_list: param_list { $$ = $1; }
     |                      { $$ = NULL; } 
     ;
 
-basic_init: ASSIGN_TOKEN expr1 { $$ = $2; }
+basic_init: ASSIGN_TOKEN expr1 { $$ = remove_redundant_paren($2); }
     |                          { $$ = NULL; }
     ;
 
@@ -293,24 +294,24 @@ flow_ending_if_dangling: SEMICOLON_TOKEN { $$ = stmt_create(STMT_SEMICOLON, NULL
     ;
 
 stmt: FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_stmt { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL, NULL); }
-    | expr1 SEMICOLON_TOKEN                                                                                              { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL, NULL); }
+    | expr1 SEMICOLON_TOKEN                                                                                              { $$ = stmt_create(STMT_EXPR, NULL, NULL, remove_redundant_paren($1), NULL, NULL, NULL, NULL); }
     | RETURN opt_expr SEMICOLON_TOKEN                                                                                    { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | decl                                                                                                               { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL, NULL); }
     | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | OPEN_CURLY_TOKEN opt_decl_body_list CLOSE_CURLY_TOKEN                                                              { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
-    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt                                                                   { $$ = stmt_create(STMT_IF, NULL, NULL, $3, NULL, $5, NULL, NULL); }
-    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt                                                  { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7, NULL); }
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_stmt                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); }
+    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN stmt                                                                   { $$ = stmt_create(STMT_IF, NULL, NULL, remove_redundant_paren($3), NULL, $5, NULL, NULL); }
+    | IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE stmt                                                  { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, remove_redundant_paren($3), NULL, $5, $7, NULL); }
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_stmt                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, remove_redundant_paren($3), NULL, $5, NULL, NULL); }
     ;
 
 
-if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dangling                                           { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7, NULL); }
+if_dangling: IF OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN if_dangling ELSE if_dangling                                           { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, remove_redundant_paren($3), NULL, $5, $7, NULL); }
     | decl                                                                                                                      { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL, NULL); }
-    | expr1 SEMICOLON_TOKEN                                                                                                     { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL, NULL); }
+    | expr1 SEMICOLON_TOKEN                                                                                                     { $$ = stmt_create(STMT_EXPR, NULL, NULL, remove_redundant_paren($1), NULL, NULL, NULL, NULL); }
     | RETURN opt_expr SEMICOLON_TOKEN                                                                                           { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | PRINT opt_expr_list SEMICOLON_TOKEN                                                                                       { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL, NULL); }
     | FOR OPEN_PARAN_TOKEN opt_expr SEMICOLON_TOKEN opt_expr SEMICOLON_TOKEN opt_expr CLOSE_PARAN_TOKEN flow_ending_if_dangling { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL, NULL); }
-    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, $3, NULL, $5, NULL, NULL); } 
+    | WHILE OPEN_PARAN_TOKEN expr1 CLOSE_PARAN_TOKEN flow_ending_if_dangling                                                    { $$ = stmt_create(STMT_WHILE, NULL, NULL, remove_redundant_paren($3), NULL, $5, NULL, NULL); } 
     | OPEN_CURLY_TOKEN opt_decl_body_list CLOSE_CURLY_TOKEN                                                                     { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL, NULL); }
     ;
 

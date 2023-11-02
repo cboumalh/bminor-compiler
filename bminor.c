@@ -60,9 +60,9 @@ int main(int argc, char *argv[]){
     }
 
     if(flags & ENCODE_FLAG) run_status = encode(file);
-    if(flags & SCAN_FLAG) run_status = scan(file);
-    if(flags & PARSE_FLAG || flags & PRINT_FLAG) run_status = parse(file);
-    if(flags & PRINT_FLAG) run_status = print(parser_result);
+    if(flags & SCAN_FLAG && run_status == EXIT_SUCCESS) run_status = scan(file);
+    if((flags & PARSE_FLAG || flags & PRINT_FLAG) && (run_status == EXIT_SUCCESS)) run_status = parse(file);
+    if(flags & PRINT_FLAG && run_status == EXIT_SUCCESS) run_status = print(parser_result);
 
 
     fclose(file);

@@ -1,5 +1,6 @@
 #include "expr.h"
 
+
 struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right ){
 	struct expr * e = calloc(1, sizeof(struct expr));
 
@@ -264,6 +265,11 @@ void expr_print( struct expr *e ){
 			if(e->right)
 				printf(",");
 			expr_print(e->right);
+		}
+		else if(e->kind == EXPR_PARAN){
+			printf("(");
+			expr_print(e->right);
+			printf(")");
 		}
 
 	}
