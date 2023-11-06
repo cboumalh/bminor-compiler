@@ -84,3 +84,7 @@ void decl_resolve(struct decl *d){
 
     decl_resolve(d->next);
 }
+
+void decl_typecheck( struct decl *d ){
+    return;
+}

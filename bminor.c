@@ -4,6 +4,7 @@
 #include "parse.h"
 #include "print.h"
 #include "resolve.h"
+#include "typecheck.h"
 #include "parser_result.h"
 #include "resolve_result.h"
 #include "scope_result.h"
@@ -44,6 +45,9 @@ int main(int argc, char *argv[]){
             if(!strcmp(flag_no_dashes, "resolve")){
                 flags |= RESOLVE_FLAG;
             }
+            if(!strcmp(flag_no_dashes, "typecheck")){
+                flags |= TYPECHECK_FLAG;
+            }
             
         }
         //input file
@@ -71,9 +75,10 @@ int main(int argc, char *argv[]){
 
     if(flags & ENCODE_FLAG) run_status = encode(file);
     if(flags & SCAN_FLAG && run_status == EXIT_SUCCESS) run_status = scan(file);
-    if((flags & PARSE_FLAG || flags & PRINT_FLAG || flags & RESOLVE_FLAG) && (run_status == EXIT_SUCCESS)) run_status = parse(file);
+    if((flags & PARSE_FLAG || flags & PRINT_FLAG || flags & RESOLVE_FLAG || flags & TYPECHECK_FLAG) && (run_status == EXIT_SUCCESS)) run_status = parse(file);
     if(flags & PRINT_FLAG && run_status == EXIT_SUCCESS) run_status = print(parser_result);
-    if(flags & RESOLVE_FLAG && run_status == EXIT_SUCCESS) run_status = resolve(parser_result);
+    if((flags & RESOLVE_FLAG || flags & TYPECHECK_FLAG) && run_status == EXIT_SUCCESS) run_status = resolve(parser_result);
+    if(flags & TYPECHECK_FLAG && run_status == EXIT_SUCCESS) run_status = typecheck(parser_result);
 
     fclose(file);
 

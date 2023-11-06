@@ -297,3 +297,7 @@ void expr_resolve(struct expr *e){
 		expr_resolve(e->right);
 	}
 }
+
+struct type * expr_typecheck( struct expr *e ){
+	return NULL;
+}
