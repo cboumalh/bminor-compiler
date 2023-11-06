@@ -18,6 +18,7 @@ PARAM_LIST = param_list
 STMT = stmt
 DECL = decl
 EXPR_UTIL = expr_utils
+PRINT = print
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
 
@@ -51,7 +52,7 @@ $(STMT).o: $(STMT).c $(STMT).h
 $(DECL).o: $(DECL).c $(DECL).h
 	$(CMP) $(CFLAGS) -c $(DECL).c -o $(DECL).o	
 
-$(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h $(PARSE).h
+$(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h $(PARSE).h $(PRINT).h
 	$(CMP) $(CFLAGS) -c $(MAIN).c -o $(MAIN).o
 
 $(EXPR_UTIL).o: $(EXPR_UTIL).c $(EXPR_UTIL).h
