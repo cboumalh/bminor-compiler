@@ -53,3 +53,8 @@ char strtochar(const char* str){
     }
 }
 
+void indent_print(int indent){
+    int i;
+    for(i = 0; i < indent; i++)
+        printf(" ");
+}

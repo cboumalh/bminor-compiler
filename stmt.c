@@ -1,5 +1,5 @@
 #include "stmt.h"
-
+#include "scope_result.h"
 
 struct stmt * stmt_create( stmt_t kind, struct decl *decl, struct expr *init_expr, struct expr *expr, struct expr *next_expr, struct stmt *body, struct stmt *else_body, struct stmt *next ){
     struct stmt * s = calloc(1, sizeof(struct stmt));
@@ -134,4 +134,23 @@ void stmt_print( struct stmt *s, int indent ){
             printf(";");
         }
     }
+}
+
+void stmt_resolve(struct stmt *s){
+    if(!s) return;
+
+    if(s->kind != STMT_COMMENT){
+        decl_resolve(s->decl);
+
+        expr_resolve(s->init_expr);
+        expr_resolve(s->expr);
+        expr_resolve(s->next_expr);
+
+        sc = s->kind == STMT_BLOCK ? scope_enter() : sc;
+        stmt_resolve(s->body);
+        sc = s->kind == STMT_BLOCK ? scope_exit(sc) : sc;
+    }
+
+    stmt_resolve(s->next);
+
 }

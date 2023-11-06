@@ -1,0 +1,1 @@
+extern int resolve_result;

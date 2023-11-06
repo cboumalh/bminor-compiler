@@ -3,7 +3,13 @@
 #include "scan.h"
 #include "parse.h"
 #include "print.h"
+#include "resolve.h"
 #include "parser_result.h"
+#include "resolve_result.h"
+#include "scope_result.h"
+
+struct scope *sc = NULL;
+int resolve_result = 1;
 
 int main(int argc, char *argv[]){
 
@@ -35,6 +41,10 @@ int main(int argc, char *argv[]){
             if(!strcmp(flag_no_dashes, "print")){
                 flags |= PRINT_FLAG;
             }
+            if(!strcmp(flag_no_dashes, "resolve")){
+                flags |= RESOLVE_FLAG;
+            }
+            
         }
         //input file
         else{
@@ -61,9 +71,9 @@ int main(int argc, char *argv[]){
 
     if(flags & ENCODE_FLAG) run_status = encode(file);
     if(flags & SCAN_FLAG && run_status == EXIT_SUCCESS) run_status = scan(file);
-    if((flags & PARSE_FLAG || flags & PRINT_FLAG) && (run_status == EXIT_SUCCESS)) run_status = parse(file);
+    if((flags & PARSE_FLAG || flags & PRINT_FLAG || flags & RESOLVE_FLAG) && (run_status == EXIT_SUCCESS)) run_status = parse(file);
     if(flags & PRINT_FLAG && run_status == EXIT_SUCCESS) run_status = print(parser_result);
-
+    if(flags & RESOLVE_FLAG && run_status == EXIT_SUCCESS) run_status = resolve(parser_result);
 
     fclose(file);
 

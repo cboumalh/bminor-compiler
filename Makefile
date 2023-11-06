@@ -19,11 +19,14 @@ STMT = stmt
 DECL = decl
 EXPR_UTIL = expr_utils
 PRINT = print
+SYMBOL = symbol
+SCOPE = scope
+TABLE = hash_table
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
 
-$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o
-	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o
+$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o
+	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o
 
 $(LEX).c: $(SCANNER).l $(PARSER).tab.h
 	$(FL) $(SCANNER).l
@@ -58,9 +61,18 @@ $(MAIN).o: $(MAIN).c $(ENCODE).h $(SCAN).h $(PARSE).h $(PRINT).h
 $(EXPR_UTIL).o: $(EXPR_UTIL).c $(EXPR_UTIL).h
 	$(CMP) $(CFLAGS) -c $(EXPR_UTIL).c -o $(EXPR_UTIL).o
 
+$(SYMBOL).o: $(SYMBOL).c $(SYMBOL).h
+	$(CMP) $(CFLAGS) -c $(SYMBOL).c -o $(SYMBOL).o
+
+$(SCOPE).o: $(SCOPE).c $(SCOPE).h
+	$(CMP) $(CFLAGS) -c $(SCOPE).c -o $(SCOPE).o
+
+$(TABLE).o: $(TABLE).c $(TABLE).h
+	$(CMP) $(CFLAGS) -c $(TABLE).c -o $(TABLE).o
+
 test: $(EXEC)
 	sh runtest.sh
 
 clean:
-	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out ./test/printer/*.out
+	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out ./test/printer/*.out ./test/resolve/*.out
 

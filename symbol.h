@@ -1,4 +1,3 @@
-
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
@@ -15,8 +14,13 @@ struct symbol {
 	struct type *type;
 	char *name;
 	int which;
+	int func_defined;
 };
 
-struct symbol * symbol_create( symbol_t kind, struct type *type, char *name );
+struct symbol * symbol_create( symbol_t kind, struct type *type, char *name, int func_defined);
+
+void symbol_print(struct symbol *sym);
+
+void symbol_delete(struct symbol *sym);
 
 #endif

@@ -1,4 +1,5 @@
 #include "expr.h"
+#include "resolve_result.h"
 
 
 struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right ){
@@ -272,5 +273,27 @@ void expr_print( struct expr *e ){
 			printf(")");
 		}
 
+	}
+}
+
+
+void expr_resolve(struct expr *e){
+	if(!e) return;
+
+	if(e->kind == EXPR_NAME) {
+		e->symbol = scope_lookup(e->name);
+		if (!e->symbol){
+            printf("[ERROR|resolve] Variable %s used before declaration\n", e->name);
+			resolve_result = 0;
+        }
+        else{
+            printf("Variable %s resolved to ", e->name);
+            symbol_print(e->symbol);
+			printf("\n");
+        }
+	} 
+	else {
+		expr_resolve(e->left);
+		expr_resolve(e->right);
 	}
 }
