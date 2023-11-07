@@ -26,8 +26,8 @@ TYPECHECK_UTIL = typecheck_utils
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
 
-$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o $(TYPECHECK_UTIL).o
-	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o $(TYPECHECK_UTIL).o
+$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o
+	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o
 
 $(LEX).c: $(SCANNER).l $(PARSER).tab.h
 	$(FL) $(SCANNER).l
@@ -71,8 +71,6 @@ $(SCOPE).o: $(SCOPE).c $(SCOPE).h
 $(TABLE).o: $(TABLE).c $(TABLE).h
 	$(CMP) $(CFLAGS) -c $(TABLE).c -o $(TABLE).o
 
-$(TYPECHECK_UTIL).o: $(TYPECHECK_UTIL).c $(TYPECHECK_UTIL).h
-	$(CMP) $(CFLAGS) -c $(TYPECHECK_UTIL).c -o $(TYPECHECK_UTIL).o
 
 test: $(EXEC)
 	sh runtest.sh
