@@ -301,3 +301,53 @@ void expr_resolve(struct expr *e){
 struct type * expr_typecheck( struct expr *e ){
 	return NULL;
 }
+
+struct expr * expr_copy(struct expr *e){
+    if(!e) return e;
+
+    struct expr * cpy = calloc(1, sizeof(struct expr));
+
+	memset(e, 0, sizeof(struct expr));
+
+	cpy->kind = e->kind;
+
+	if(e->name)
+		cpy->name = strdup(e->name);
+	else
+		cpy->name = NULL;
+
+	cpy->literal_value = e->literal_value;
+	cpy->literal_float_value = e->literal_float_value;
+
+	if(e->string_literal)
+		cpy->string_literal = strdup(e->string_literal);
+	else
+		cpy->name = NULL;
+
+	cpy->symbol = symbol_copy(e->symbol);
+
+	cpy->left = expr_copy(e->left);
+	cpy->right = expr_copy(e->right);
+
+	return cpy;
+}
+
+void expr_delete(struct expr *e){
+	if(!e) return;
+
+	expr_delete(e->left);
+	expr_delete(e->right);
+
+	if(e->name){
+		char* nonConstPointer = (char*)e->name;
+    	free(nonConstPointer);
+	}
+	if(e->string_literal){
+		char* nonConstPointer = (char*)e->string_literal;
+    	free(nonConstPointer);
+	}
+
+	symbol_delete(e->symbol);
+	
+	free(e);
+}

@@ -39,3 +39,41 @@ void param_list_resolve(struct param_list *a){
 		a = a->next;
 	}
 }
+
+struct param_list * param_copy(struct param_list *a){
+	if(!a) return a;
+
+	struct param_list * p = calloc(1, sizeof(struct param_list));
+
+	memset(p, 0, sizeof(struct param_list));
+
+	if(a->name)
+		p->name = strdup(a->name);
+	else
+		p->name = NULL;
+
+	p->type = type_copy(a->type);
+	p->symbol = symbol_copy(a->symbol);
+	p->next = param_copy(a->next);
+
+	return p;
+}
+
+void param_delete(struct param_list *a){
+	if(!a) return;
+
+	free(a->name);
+	type_delete(a->type);
+	symbol_delete(a->symbol);
+
+	param_delete(a->next);
+
+	free(a);
+}
+
+int param_list_equals(struct param_list *a, struct param_list *b){
+	if(!a && !b) return 1;
+	if((a && !b) || (b && !a)) return 0;
+
+	return type_equals(a->type, b->type) && param_list_equals(a->next, b->next);
+}

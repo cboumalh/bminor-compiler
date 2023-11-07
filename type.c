@@ -45,13 +45,38 @@ void type_print( struct type *t ){
 }
 
 struct type * type_copy( struct type *t ){
-    return NULL;
-}
+    if(!t) return t;
 
-int type_compare( struct type *a, struct type *b ){
-    return 0;
+    struct type * cpy = calloc(1, sizeof(struct type));
+	memset(cpy, 0, sizeof(struct type));
+
+	cpy->kind = t->kind;
+	cpy->subtype = type_copy(t->subtype);
+	cpy->params = param_copy(t->params);
+    cpy->size = expr_copy(t->size);
+
+	return cpy;
 }
 
 void type_delete( struct type *t ){
-    return;
+    if(!t) return;
+    param_delete(t->params);
+    expr_delete(t->size);
+    type_delete(t->subtype);
+
+    free(t);
+}
+
+int type_equals(struct type *a, struct type *b){
+    if(!a || !b) return 0;
+    if(a->kind != b->kind) return 0;
+
+    if(a->kind == TYPE_ARRAY)
+        return type_equals(a->subtype, b->subtype);
+
+    else if(a->kind == TYPE_FUNCTION)
+        return type_equals(a->subtype, b->subtype) && param_list_equals(a->params, b->params);
+
+
+    return 1;
 }

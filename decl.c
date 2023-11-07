@@ -66,7 +66,7 @@ void decl_resolve(struct decl *d){
             printf("%s has already been declared in this scope!\n", d->name);
             resolve_result = 0;
         }
-
+    
         if(d->type->params){
             scope_enter();
             param_list_resolve(d->type->params);

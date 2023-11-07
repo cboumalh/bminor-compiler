@@ -70,5 +70,7 @@ struct expr * expr_create_float_literal( float c );
 void expr_resolve( struct expr *e );
 struct type * expr_typecheck( struct expr *e );
 void expr_print( struct expr *e );
+struct expr * expr_copy(struct expr *e);
+void expr_delete(struct expr *e);
 
 #endif

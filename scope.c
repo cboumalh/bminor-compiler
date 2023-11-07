@@ -11,7 +11,6 @@ struct symbol *scope_bind(const char *name, struct symbol *sym){
             return NULL;
 
         existing_sym->func_defined = existing_sym->func_defined || sym->func_defined;
-
         symbol_delete(sym);
         return existing_sym;
     }
