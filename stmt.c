@@ -148,12 +148,16 @@ void stmt_resolve(struct stmt *s, int verbose){
         expr_resolve(s->expr, verbose);
         expr_resolve(s->next_expr, verbose);
 
-        stmt_resolve(s->body, verbose);
-        stmt_resolve(s->else_body, verbose);
+        if(s->kind == STMT_BLOCK){
+            sc = scope_enter();
+            stmt_resolve(s->body, verbose);
+            sc = scope_exit();
 
-        sc = s->kind == STMT_BLOCK ? scope_enter() : sc;
-        stmt_resolve(s->body, verbose);
-        sc = s->kind == STMT_BLOCK ? scope_exit(sc) : sc;
+        }
+        else{
+            stmt_resolve(s->body, verbose);
+            stmt_resolve(s->else_body, verbose);
+        }
     }
 
     stmt_resolve(s->next, verbose);
@@ -236,7 +240,7 @@ void stmt_typecheck(struct stmt *s, struct type *decl_type){
             typecheck_result = 0;
             printf("type error: function return type ");
             type_print(decl_type->subtype);
-            printf(" does not match type returned ");
+            printf("does not match type returned ");
             type_print(t);
             printf("\n");
         }
