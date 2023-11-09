@@ -148,6 +148,9 @@ void stmt_resolve(struct stmt *s, int verbose){
         expr_resolve(s->expr, verbose);
         expr_resolve(s->next_expr, verbose);
 
+        stmt_resolve(s->body, verbose);
+        stmt_resolve(s->else_body, verbose);
+
         sc = s->kind == STMT_BLOCK ? scope_enter() : sc;
         stmt_resolve(s->body, verbose);
         sc = s->kind == STMT_BLOCK ? scope_exit(sc) : sc;
