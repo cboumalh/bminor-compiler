@@ -52,13 +52,13 @@ void decl_print( struct decl *d, int indent ){
     }
 }
 
-void decl_resolve(struct decl *d){
+void decl_resolve(struct decl *d, int verbose){
     if(!d) return;
 
     if(d->name){
-        expr_resolve(d->value);
+        expr_resolve(d->value, verbose);
 
-        expr_resolve(d->type->size);
+        expr_resolve(d->type->size, verbose);
 
         symbol_t kind = scope_is_global() ? SYMBOL_GLOBAL : SYMBOL_LOCAL;
 
@@ -66,18 +66,19 @@ void decl_resolve(struct decl *d){
         
 
         if(!scope_bind(d->name, d->symbol)){
-            printf("%s has already been declared in this scope!\n", d->name);
+            if(verbose)
+                printf("%s has already been declared in this scope!\n", d->name);
             resolve_result = 0;
         }
     
         if(d->type->params){
             scope_enter();
-            param_list_resolve(d->type->params);
+            param_list_resolve(d->type->params, verbose);
         }
 
         if(d->code) {
             scope_enter();
-            stmt_resolve(d->code);
+            stmt_resolve(d->code, verbose);
             scope_exit();
         }
 
@@ -85,7 +86,7 @@ void decl_resolve(struct decl *d){
 
     }
 
-    decl_resolve(d->next);
+    decl_resolve(d->next, verbose);
 }
 
 void decl_typecheck( struct decl *d ){

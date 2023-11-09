@@ -138,22 +138,22 @@ void stmt_print( struct stmt *s, int indent ){
     }
 }
 
-void stmt_resolve(struct stmt *s){
+void stmt_resolve(struct stmt *s, int verbose){
     if(!s) return;
 
     if(s->kind != STMT_COMMENT){
-        decl_resolve(s->decl);
+        decl_resolve(s->decl, verbose);
 
-        expr_resolve(s->init_expr);
-        expr_resolve(s->expr);
-        expr_resolve(s->next_expr);
+        expr_resolve(s->init_expr, verbose);
+        expr_resolve(s->expr, verbose);
+        expr_resolve(s->next_expr, verbose);
 
         sc = s->kind == STMT_BLOCK ? scope_enter() : sc;
-        stmt_resolve(s->body);
+        stmt_resolve(s->body, verbose);
         sc = s->kind == STMT_BLOCK ? scope_exit(sc) : sc;
     }
 
-    stmt_resolve(s->next);
+    stmt_resolve(s->next, verbose);
 
 }
 

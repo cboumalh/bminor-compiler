@@ -29,11 +29,12 @@ void param_list_print( struct param_list *a ){
 	}
 }
 
-void param_list_resolve(struct param_list *a){
+void param_list_resolve(struct param_list *a, int verbose){
 	while(a){
         a->symbol = symbol_create(SYMBOL_PARAM, a->type, a->name, 0);
 		if(!scope_bind(a->name, a->symbol)){
-            printf("%s has already been declared in this scope!\n", a->name);
+			if(verbose)
+            	printf("%s has already been declared in this scope!\n", a->name);
             resolve_result = 0;
         }
 		a = a->next;

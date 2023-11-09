@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include "resolve_result.h"
 
-int resolve(struct decl *ast){
+int resolve(struct decl *ast, int verbose){
     sc = scope_enter();
-    decl_resolve(ast);
+    decl_resolve(ast, verbose);
     scope_exit();
     if(!resolve_result)
         return EXIT_FAILURE;

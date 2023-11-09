@@ -278,24 +278,27 @@ void expr_print( struct expr *e ){
 }
 
 
-void expr_resolve(struct expr *e){
+void expr_resolve(struct expr *e, int verbose){
 	if(!e) return;
 
 	if(e->kind == EXPR_NAME) {
 		e->symbol = scope_lookup(e->name);
 		if (!e->symbol){
-            printf("[ERROR|resolve] Variable %s used before declaration\n", e->name);
+			if(verbose)
+            	printf("[ERROR|resolve] Variable %s used before declaration\n", e->name);
 			resolve_result = 0;
         }
         else{
-            printf("Variable %s resolved to ", e->name);
-            symbol_print(e->symbol);
-			printf("\n");
+			if(verbose){
+            	printf("Variable %s resolved to ", e->name);
+            	symbol_print(e->symbol);
+				printf("\n");
+			}
         }
 	} 
 	else {
-		expr_resolve(e->left);
-		expr_resolve(e->right);
+		expr_resolve(e->left, verbose);
+		expr_resolve(e->right, verbose);
 	}
 }
 
@@ -622,7 +625,7 @@ struct expr * expr_copy(struct expr *e){
 
     struct expr * cpy = calloc(1, sizeof(struct expr));
 
-	memset(e, 0, sizeof(struct expr));
+	memset(cpy, 0, sizeof(struct expr));
 
 	cpy->kind = e->kind;
 

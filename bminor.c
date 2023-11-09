@@ -79,7 +79,8 @@ int main(int argc, char *argv[]){
     if(flags & SCAN_FLAG && run_status == EXIT_SUCCESS) run_status = scan(file);
     if((flags & PARSE_FLAG || flags & PRINT_FLAG || flags & RESOLVE_FLAG || flags & TYPECHECK_FLAG) && (run_status == EXIT_SUCCESS)) run_status = parse(file);
     if(flags & PRINT_FLAG && run_status == EXIT_SUCCESS) run_status = print(parser_result);
-    if((flags & RESOLVE_FLAG || flags & TYPECHECK_FLAG) && run_status == EXIT_SUCCESS) run_status = resolve(parser_result);
+    if(flags & RESOLVE_FLAG  && run_status == EXIT_SUCCESS) run_status = resolve(parser_result, 1);
+    if(flags & TYPECHECK_FLAG  && run_status == EXIT_SUCCESS) run_status = resolve(parser_result, 0);
     if(flags & TYPECHECK_FLAG && run_status == EXIT_SUCCESS) run_status = typecheck(parser_result);
 
     fclose(file);
