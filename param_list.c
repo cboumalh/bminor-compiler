@@ -89,10 +89,6 @@ void param_typecheck(struct type *t, struct param_list *p){
 			printf("\n");
 			typecheck_result = 0;
 		}
-		if(p->type->kind == TYPE_FUNCTION){
-			typecheck_result = 0;
-			printf("type error: (NOT SUPPORTED) functions cannot take other functions as arguments\n");
-		}
 
 		p = p->next;
 		t = t->next;

@@ -8,8 +8,8 @@
 #include "utils.h"
 
 typedef enum {
-	TYPE_VOID,
 	TYPE_BOOLEAN,
+	TYPE_VOID,
 	TYPE_CHARACTER,
 	TYPE_INTEGER,
 	TYPE_STRING,

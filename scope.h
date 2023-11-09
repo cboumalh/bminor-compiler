@@ -3,6 +3,7 @@
 
 #include "symbol.h"
 #include "hash_table.h"
+#include "type.h"
 #include <stdbool.h>
 
 struct scope {

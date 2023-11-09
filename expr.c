@@ -337,10 +337,6 @@ struct type * expr_typecheck( struct expr *e ){
 			type_print(lt);
 		}
 		param_typecheck(rt, lt->params);
-		if(lt->subtype->kind == TYPE_ARRAY || lt->subtype->kind == TYPE_FUNCTION){
-			typecheck_result = 0;
-			printf("type error: (NOT SUPPORTED) functions to return other functions/arrays\n");
-		}
 		result = type_copy(lt->subtype);
 	} 
 	else if (e->kind == EXPR_ONE_D_ARR) {
@@ -600,7 +596,7 @@ struct type * expr_typecheck( struct expr *e ){
 			typecheck_result = 0;
 		}
 
-		if(e->left->kind != EXPR_NAME) {
+		if(e->left->kind != EXPR_NAME && e->left->kind != EXPR_SUBSCRIPT) {
 			printf("type error: we can only assign to variables: ");
 			expr_print(e->left);
 			printf(" of type ");

@@ -13,13 +13,13 @@ void symbol_print(struct symbol *sym){
     if(!sym) return;
     switch(sym->kind){
         case SYMBOL_GLOBAL:
-            printf("global %s", sym->name);
+            printf("global %s\n", sym->name);
             break;
         case SYMBOL_LOCAL:
-            printf("local %d", sym->which);
+            printf("local %d\n", sym->which);
             break;
         case SYMBOL_PARAM:
-            printf("param %d", sym->which);
+            printf("param %d\n", sym->which);
             break;
         default:
             puts(":/\n");

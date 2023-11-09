@@ -63,7 +63,6 @@ void decl_resolve(struct decl *d, int verbose){
         symbol_t kind = scope_is_global() ? SYMBOL_GLOBAL : SYMBOL_LOCAL;
 
         d->symbol = symbol_create(kind, d->type, d->name, d->type->kind == TYPE_FUNCTION && d->code);
-        
 
         if(!scope_bind(d->name, d->symbol)){
             if(verbose)
@@ -123,6 +122,19 @@ void decl_typecheck( struct decl *d ){
         }
 
         if(d->code) {
+            if(d->symbol->type->subtype && (d->symbol->type->subtype->kind == TYPE_ARRAY || d->symbol->type->subtype->kind == TYPE_FUNCTION)){
+                typecheck_result = 0;
+                printf("type error: (NOT SUPPORTED) functions to return other functions/arrays\n");
+		    }
+
+            struct param_list * temp = d->symbol->type->params;
+            while(temp){
+                if(temp->type->kind == TYPE_FUNCTION){
+			        typecheck_result = 0;
+			        printf("type error: (NOT SUPPORTED) functions cannot take other functions as arguments\n");
+                }
+                temp = temp->next;
+            }
             stmt_typecheck(d->code, d->symbol->type);
         }
     }

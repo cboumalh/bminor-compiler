@@ -7,11 +7,23 @@ struct symbol *scope_bind(const char *name, struct symbol *sym){
     if(!hash_table_insert(sc->table, name, sym)){
         struct symbol *existing_sym = scope_lookup_top(name);
 
-        if(existing_sym->type->kind != TYPE_FUNCTION || sym->type->kind != TYPE_FUNCTION || (existing_sym->func_defined && sym->func_defined))
+        if(existing_sym->type->kind != TYPE_FUNCTION || sym->type->kind != TYPE_FUNCTION)
+            return NULL;
+        
+        if(!type_equals(existing_sym->type, sym->type))
             return NULL;
 
-        existing_sym->func_defined = existing_sym->func_defined || sym->func_defined;
-        symbol_delete(sym);
+        if(!param_list_equals(existing_sym->type->params, sym->type->params))
+            return NULL;
+
+        if(type_equals(existing_sym->type, sym->type) && (existing_sym->func_defined && sym->func_defined))
+            return NULL;
+
+        if(type_equals(existing_sym->type, sym->type) && (existing_sym->func_defined == 1 || sym->func_defined == 1)){
+            existing_sym->func_defined = 1;
+            sym->func_defined = 1;
+        }
+
         return existing_sym;
     }
 

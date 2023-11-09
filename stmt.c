@@ -244,10 +244,10 @@ void stmt_typecheck(struct stmt *s, struct type *decl_type){
             type_print(t);
             printf("\n");
         }
-        else if(!t && decl_type->kind != TYPE_VOID){
+        else if(!t && decl_type->subtype->kind != TYPE_VOID){
             typecheck_result = 0;
             printf("type error: function must return a ");
-            type_print(t);
+            type_print(decl_type->subtype);
             printf("\n");
         }
     }
