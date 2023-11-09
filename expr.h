@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils.h"
+#include "type.h"
 #include "expr_utils.h"
 #include "scope.h"
+#include "param_list.h"
 
 
 typedef enum {

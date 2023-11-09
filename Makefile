@@ -1,6 +1,6 @@
 CMP = gcc
 FL = flex
-CFLAGS = -Wall -lm
+CFLAGS = -Wall -lm -g
 ENCODE = encode
 UTIL = utils
 MAIN = bminor
@@ -76,5 +76,5 @@ test: $(EXEC)
 	sh runtest.sh
 
 clean:
-	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out ./test/printer/*.out ./test/resolve/*.out
+	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out ./test/printer/*.out ./test/resolve/*.out ./test/typecheck/*.out
 

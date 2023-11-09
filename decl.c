@@ -1,5 +1,7 @@
 #include "decl.h"
 #include "resolve_result.h"
+#include "typecheck_result.h"
+
 
 struct decl * decl_create( char *name, struct type *type, struct expr *value, struct stmt *code, struct decl *next ){
     struct decl * d = calloc(1, sizeof(struct decl));
@@ -61,6 +63,7 @@ void decl_resolve(struct decl *d){
         symbol_t kind = scope_is_global() ? SYMBOL_GLOBAL : SYMBOL_LOCAL;
 
         d->symbol = symbol_create(kind, d->type, d->name, d->type->kind == TYPE_FUNCTION && d->code);
+        
 
         if(!scope_bind(d->name, d->symbol)){
             printf("%s has already been declared in this scope!\n", d->name);
@@ -86,5 +89,43 @@ void decl_resolve(struct decl *d){
 }
 
 void decl_typecheck( struct decl *d ){
-    return;
+    if(!d) return;
+    if(d->name){
+        if(d->value) {
+            struct type *t;
+            t = expr_typecheck(d->value);
+            int type_eq_val = type_equals(t,d->symbol->type);
+            if(!type_eq_val) {
+                typecheck_result = 0;
+                printf("type error: cannot assign ");
+                expr_print(d->value);
+                printf(" of type ");
+                type_print(t);
+                printf(" to %s\n", d->name);
+            }
+
+            if(type_eq_val && d->symbol->kind == SYMBOL_LOCAL && t && t->kind == TYPE_ARRAY){
+                typecheck_result = 0;
+                printf("type error: (NOT SUPPORTED) array initializer in the local scope\n");
+            }
+
+            if(type_eq_val && d->symbol->kind == SYMBOL_GLOBAL && is_var_expr(d->value)){
+                typecheck_result = 0;
+                printf("type error: (NOT SUPPORTED) non constant initializers in the global scope\n");
+            }
+
+        }
+
+        if(d->symbol->type->kind == TYPE_ARRAY && !d->value && !d->symbol->type->size){
+                typecheck_result = 0;
+                printf("type error: cannot declare an array with no size without initializing it with a value\n");
+        }
+
+        if(d->code) {
+            stmt_typecheck(d->code, d->symbol->type);
+        }
+    }
+
+
+    decl_typecheck(d->next);
 }

@@ -1,5 +1,6 @@
 #include "expr.h"
 #include "resolve_result.h"
+#include "typecheck_result.h"
 
 
 struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right ){
@@ -299,7 +300,321 @@ void expr_resolve(struct expr *e){
 }
 
 struct type * expr_typecheck( struct expr *e ){
-	return NULL;
+	if(!e) return NULL;
+
+	struct type *lt = expr_typecheck(e->left);
+	struct type *rt = expr_typecheck(e->right);
+
+	struct type *result;
+
+	if (e->kind == EXPR_INTEGER_LITERAL) {
+		result = type_create(TYPE_INTEGER, 0, 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_STRING_LITERAL) {
+		result = type_create(TYPE_STRING, 0, 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_CHAR_LITERAL) {
+		result = type_create(TYPE_CHARACTER, 0, 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_BOOL_LITERAL) {
+		result = type_create(TYPE_BOOLEAN, 0, 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_FLOAT_LITERAL) {
+		result = type_create(TYPE_FLOAT, 0, 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_NAME) {
+		result = type_copy(e->symbol->type);
+	} 
+	else if (e->kind == EXPR_CALL) {
+		if (lt->kind != TYPE_FUNCTION) {
+			typecheck_result = 0;
+			printf("type error: function name has to be of type function: ");
+			expr_print(e->left);
+			printf(" is of type ");
+			type_print(lt);
+		}
+		param_typecheck(rt, lt->params);
+		if(lt->subtype->kind == TYPE_ARRAY || lt->subtype->kind == TYPE_FUNCTION){
+			typecheck_result = 0;
+			printf("type error: (NOT SUPPORTED) functions to return other functions/arrays\n");
+		}
+		result = type_copy(lt->subtype);
+	} 
+	else if (e->kind == EXPR_ONE_D_ARR) {
+		struct type *temp = lt;
+		while (temp && temp->next) {
+			if (!type_equals(temp, temp->next)){
+				printf("type error: array has two elements of different kinds ");
+				type_print(temp);
+				printf("and ");
+				type_print(temp->next);
+				printf("\n");
+				typecheck_result = 0;
+			}
+			if(temp->kind == TYPE_FUNCTION || temp->next->kind == TYPE_FUNCTION){
+				typecheck_result = 0;
+				printf("type error: (NOT SUPPORTED) array element cannot be a function\n");
+			}
+			temp = temp->next;
+		}
+		result = type_create(TYPE_ARRAY, type_create(lt->kind, 0, 0, 0, 0), 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_PARAN) {
+		result = type_copy(rt);
+	} 
+	else if (e->kind == EXPR_ARRAY_DECL) {
+		result = type_create(TYPE_ARRAY, lt, 0, 0, 0);
+	} 
+	else if (e->kind == EXPR_ARG) {
+		result = type_copy(lt);
+		result->next = type_copy(rt);
+	} 
+	else if (e->kind == EXPR_SUBSCRIPT) {
+		if(e->left){
+			if (lt->kind == TYPE_ARRAY) {
+				if (rt->kind != TYPE_INTEGER) {
+					typecheck_result = 0;
+					printf("type error: array index ");
+					expr_print(e->right);
+					printf(" of type ");
+					type_print(lt);
+					printf("is not an integer\n");
+				}
+				result = type_copy(lt->subtype);
+			} else {
+				typecheck_result = 0;
+				printf("type error: variable does not match array: ");
+				expr_print(e->left);
+				printf("\n");
+				result = type_copy(lt);
+			}
+		}
+		else{
+			result = type_copy(rt);
+		}
+	} 
+	else if (e->kind == EXPR_PLUS) {
+		if(rt->kind != TYPE_INTEGER && rt->kind != TYPE_FLOAT){
+			typecheck_result = 0;
+			printf("type error: ");
+			expr_print(e->right);
+			printf(" is a ");
+			type_print(rt);
+			printf(", only floats/integers are acceptable\n");
+		}
+		result = type_copy(rt);
+	} 
+	else if (e->kind == EXPR_DECREMENT) {
+		if(lt){
+			if(e->left->kind != EXPR_NAME){
+				printf("type error: there is an attempt to decrement an expression that is not a variable: ");
+				expr_print(e->left);
+				printf("\n");
+				typecheck_result = 0;
+			}
+			if(lt->kind != TYPE_INTEGER){
+				printf("type error: ");
+				expr_print(e->left);
+				printf(" is of type ");
+				type_print(lt);
+				printf("and we can only decrement integers\n");
+				typecheck_result = 0;
+			}
+		}
+		else if(rt){
+			if(e->right->kind != EXPR_NAME){
+				printf("type error: there is an attempt to decrement an expression that is not a variable: ");
+				expr_print(e->right);
+				printf("\n");
+				typecheck_result = 0;
+			}
+			if(rt->kind != TYPE_INTEGER){
+				typecheck_result = 0;
+				printf("type error: ");
+				expr_print(e->right);
+				printf(" is of type ");
+				type_print(rt);
+				printf("and we can only decrement integers\n");
+			}
+		}
+		result = lt ? type_copy(lt) : type_copy(rt);
+	} 
+	else if (e->kind == EXPR_INCREMENT) {
+		if(lt){
+			if(e->left->kind != EXPR_NAME){
+				printf("type error: there is an attempt to increment an expression that is not a variable: ");
+				expr_print(e->left);
+				printf("\n");
+				typecheck_result = 0;
+			}
+			if(lt->kind != TYPE_INTEGER){
+				printf("type error: ");
+				expr_print(e->left);
+				printf(" is of type ");
+				type_print(lt);
+				printf("and we can only increment integers\n");
+				typecheck_result = 0;
+			}
+		}
+		else if(rt){
+			if(e->right->kind != EXPR_NAME){
+				printf("type error: there is an attempt to increment an expression that is not a variable: ");
+				expr_print(e->right);
+				printf("\n");
+				typecheck_result = 0;
+			}
+			if(rt->kind != TYPE_INTEGER){
+				typecheck_result = 0;
+				printf("type error: ");
+				expr_print(e->right);
+				printf(" is of type ");
+				type_print(rt);
+				printf("and we can only increment integers\n");
+			}
+		}
+		result = lt ? type_copy(lt) : type_copy(rt);
+	} 
+	else if (e->kind == EXPR_NOT) {
+		if(rt->kind != TYPE_BOOLEAN && rt->kind != TYPE_INTEGER){
+			typecheck_result = 0;
+			printf("type error: ");
+			expr_print(e->right);
+			printf(" is a ");
+			type_print(rt);
+			printf(", only booleans/integers are acceptable\n");
+		}
+		result = type_copy(rt);
+	} 
+	else if (e->kind == EXPR_UNARY) {
+		if(rt->kind != TYPE_INTEGER && rt->kind != TYPE_FLOAT){
+			typecheck_result = 0;
+			printf("type error: ");
+			expr_print(e->right);
+			printf(" is a ");
+			type_print(rt);
+			printf(", only floats/integers are acceptable\n");
+		}
+		result = type_copy(rt);
+	}
+	else if (e->kind == EXPR_POWER || e->kind == EXPR_ADD || e->kind == EXPR_DIV || e->kind == EXPR_MUL || e->kind == EXPR_SUB) {
+		if(rt->kind == TYPE_FLOAT && (lt->kind == TYPE_INTEGER || lt->kind == TYPE_FLOAT))
+			result = type_create(TYPE_FLOAT, 0, 0, 0, 0);
+		else if(rt->kind == TYPE_INTEGER && lt->kind == TYPE_INTEGER)
+			result = type_create(TYPE_INTEGER, 0, 0, 0, 0);
+		else if (rt->kind == TYPE_INTEGER && lt->kind == TYPE_FLOAT)
+			result = type_create(TYPE_FLOAT, 0, 0, 0, 0);
+		else{
+			
+			typecheck_result = 0;
+			result = type_create(TYPE_INTEGER, 0, 0, 0, 0);
+		}
+	}
+	else if(e->kind == EXPR_MODULO){
+		if(rt->kind != TYPE_INTEGER || lt->kind != TYPE_INTEGER){
+			printf("Cannot perform modulo on non ints\n");
+			typecheck_result = 0;
+		}
+
+		result = type_create(TYPE_INTEGER, 0, 0, 0, 0);
+	}
+	else if(e->kind == EXPR_LESS || e->kind == EXPR_GREATER || e->kind == EXPR_GREATER_OR_EQ || e->kind == EXPR_LESS_OR_EQ){
+		if(!type_equals(lt,rt)) {
+			printf("type error: cannot compare ");
+			expr_print(e->left);
+			printf(" of type ");
+			type_print(lt);
+			printf("with ");
+			expr_print(e->right);
+			printf(" of type ");
+			type_print(rt);
+			printf("\n");
+			typecheck_result = 0;
+		}
+
+		if(lt->kind==TYPE_VOID ||
+		lt->kind==TYPE_ARRAY ||
+		lt->kind==TYPE_FUNCTION ||
+		lt->kind==TYPE_STRING ||
+		lt->kind == TYPE_BOOLEAN) {
+			typecheck_result = 0;
+			printf("type error: cannot compare objects of type ");
+			type_print(rt);
+			printf("\n");
+		}
+		result = type_create(TYPE_BOOLEAN, 0, 0, 0, 0);
+	}
+	else if(e->kind == EXPR_EQ || e->kind == EXPR_NOT_EQUAL){
+		if(!type_equals(lt,rt)) {
+			printf("type error: cannot compare ");
+			expr_print(e->left);
+			printf(" of type ");
+			type_print(lt);
+			printf("with ");
+			expr_print(e->right);
+			printf(" of type ");
+			type_print(rt);
+			printf("\n");
+			typecheck_result = 0;
+		}
+
+		if(lt->kind==TYPE_VOID ||
+		lt->kind==TYPE_ARRAY ||
+		lt->kind==TYPE_FUNCTION) {
+            typecheck_result = 0;
+			printf("type error: cannot compare objects of type ");
+			type_print(rt);
+			printf("\n");
+		}
+		result = type_create(TYPE_BOOLEAN, 0, 0, 0, 0);
+	}
+	else if(e->kind == EXPR_AND || e->kind == EXPR_OR){
+		if(lt->kind != TYPE_BOOLEAN || rt->kind != TYPE_BOOLEAN){
+            typecheck_result = 0;
+			printf("type error: cannot use logical operators on ");
+			expr_print(e->left);
+			printf(" of type ");
+			type_print(lt);
+			printf("with ");
+			expr_print(e->right);
+			printf(" of type ");
+			type_print(rt);
+			printf("booleans only are excepted\n");
+		}
+
+		result = type_create(TYPE_BOOLEAN, 0, 0, 0, 0);
+	}
+	else if(e->kind == EXPR_ASSIGN){
+		if(!type_equals(lt,rt)) {
+			printf("type error: cannot assign ");
+			expr_print(e->left);
+			printf(" of type ");
+			type_print(lt);
+			printf("to ");
+			expr_print(e->right);
+			printf(" of type ");
+			type_print(rt);
+			printf("\n");
+			typecheck_result = 0;
+		}
+
+		if(e->left->kind != EXPR_NAME) {
+			printf("type error: we can only assign to variables: ");
+			expr_print(e->left);
+			printf(" of type ");
+			type_print(lt);
+			printf("is not a variable\n");
+            typecheck_result = 0;
+		}
+
+		
+		result = type_copy(rt);
+	}
+
+
+	type_delete(lt);
+	type_delete(rt);
+
+	return result;
 }
 
 struct expr * expr_copy(struct expr *e){

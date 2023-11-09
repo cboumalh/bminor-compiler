@@ -8,9 +8,11 @@
 #include "parser_result.h"
 #include "resolve_result.h"
 #include "scope_result.h"
+#include "typecheck_result.h"
 
 struct scope *sc = NULL;
 int resolve_result = 1;
+int typecheck_result = 1;
 
 int main(int argc, char *argv[]){
 

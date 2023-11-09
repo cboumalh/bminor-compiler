@@ -77,3 +77,28 @@ int param_list_equals(struct param_list *a, struct param_list *b){
 
 	return type_equals(a->type, b->type) && param_list_equals(a->next, b->next);
 }
+
+void param_typecheck(struct type *t, struct param_list *p){
+	while(p && t){
+		if(!type_equals(p->type, t)){
+			printf("type error: function parameter is of type ");
+			type_print(p->type);
+			printf(" but argument is of type ");
+			type_print(t);
+			printf("\n");
+			typecheck_result = 0;
+		}
+		if(p->type->kind == TYPE_FUNCTION){
+			typecheck_result = 0;
+			printf("type error: (NOT SUPPORTED) functions cannot take other functions as arguments\n");
+		}
+
+		p = p->next;
+		t = t->next;
+	}
+
+	if(p || t){
+		printf("type error: number of arguments in function call is incorrect\n");
+		typecheck_result = 0;
+	}
+}

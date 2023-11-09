@@ -24,9 +24,10 @@ struct type {
 	struct param_list *params;
 	struct type *subtype;
 	struct expr *size;
+	struct type *next;
 };
 
-struct type * type_create( type_t kind, struct type *subtype, struct param_list *params, struct expr *size);
+struct type * type_create( type_t kind, struct type *subtype, struct param_list *params, struct expr *size, struct type *next);
 void          type_print( struct type *t );
 struct type * type_copy( struct type *t );
 int type_equals( struct type *a, struct type *b );

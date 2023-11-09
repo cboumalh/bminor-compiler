@@ -95,9 +95,9 @@ struct expr* remove_redundant_paren(struct expr * e){
         left = top->left;
         right = top->right;
 
-        if(right && right->kind == EXPR_PARAN && precedence[top->kind] <= precedence[right->right->kind])
+        if(right && right->kind == EXPR_PARAN && precedence[top->kind] < precedence[right->right->kind])
             top->right = right->right;
-        if(left && left->kind == EXPR_PARAN && precedence[top->kind] <= precedence[left->right->kind])
+        if(left && left->kind == EXPR_PARAN && precedence[top->kind] < precedence[left->right->kind])
             top->left = left->right;
 
 
@@ -106,4 +106,12 @@ struct expr* remove_redundant_paren(struct expr * e){
     }
 
     return e;
+}
+
+int is_var_expr(struct expr * e){
+    if(!e) return 0;
+    
+    if(e->kind == EXPR_NAME) return 1;
+
+    return is_var_expr(e->left) || is_var_expr(e->right); 
 }

@@ -1,6 +1,6 @@
 #include "type.h"
 
-struct type * type_create( type_t kind, struct type *subtype, struct param_list *params, struct expr *size){
+struct type * type_create( type_t kind, struct type *subtype, struct param_list *params, struct expr *size, struct type *next){
 	struct type * t = calloc(1, sizeof(struct type));
 
 	memset(t, 0, sizeof(struct type));
@@ -9,6 +9,7 @@ struct type * type_create( type_t kind, struct type *subtype, struct param_list 
 	t->subtype = subtype;
 	t->params = params;
     t->size = size;
+    t->next = next;
 
 	return t;
 }
@@ -54,6 +55,7 @@ struct type * type_copy( struct type *t ){
 	cpy->subtype = type_copy(t->subtype);
 	cpy->params = param_copy(t->params);
     cpy->size = expr_copy(t->size);
+    cpy->next = type_copy(t->next);
 
 	return cpy;
 }
@@ -63,6 +65,7 @@ void type_delete( struct type *t ){
     param_delete(t->params);
     expr_delete(t->size);
     type_delete(t->subtype);
+    type_delete(t->next);
 
     free(t);
 }
@@ -76,7 +79,6 @@ int type_equals(struct type *a, struct type *b){
 
     else if(a->kind == TYPE_FUNCTION)
         return type_equals(a->subtype, b->subtype) && param_list_equals(a->params, b->params);
-
 
     return 1;
 }

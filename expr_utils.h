@@ -20,5 +20,6 @@ struct expr * peek(struct Stack* stack);
 void cleanupStack(struct Stack* stack);
 struct expr * remove_redundant_paren(struct expr * e);
 int is_atomic(struct expr * e);
+int is_var_expr(struct expr * e);
 
 #endif

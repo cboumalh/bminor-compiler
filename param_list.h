@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils.h"
+#include "typecheck_result.h"
 
 struct expr;
 
@@ -23,5 +24,6 @@ void param_list_resolve(struct param_list *a);
 struct param_list * param_copy(struct param_list *a);
 void param_delete(struct param_list *a);
 int param_list_equals(struct param_list *a, struct param_list *b);
+void param_typecheck(struct type *, struct param_list *);
 
 #endif
