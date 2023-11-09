@@ -6,5 +6,5 @@ main: function integer() = {
     return 0;
     main();
 }
-main: function string();
+
 //main: function void() = {main;}
