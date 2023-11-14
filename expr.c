@@ -405,7 +405,7 @@ struct type * expr_typecheck( struct expr *e ){
 	} 
 	else if (e->kind == EXPR_DECREMENT) {
 		if(lt){
-			if(e->left->kind != EXPR_NAME){
+			if(e->left->kind != EXPR_NAME && e->left->kind != EXPR_SUBSCRIPT){
 				printf("type error: there is an attempt to decrement an expression that is not a variable: ");
 				expr_print(e->left);
 				printf("\n");
@@ -421,7 +421,7 @@ struct type * expr_typecheck( struct expr *e ){
 			}
 		}
 		else if(rt){
-			if(e->right->kind != EXPR_NAME){
+			if(e->right->kind != EXPR_NAME && e->right->kind != EXPR_SUBSCRIPT){
 				printf("type error: there is an attempt to decrement an expression that is not a variable: ");
 				expr_print(e->right);
 				printf("\n");
@@ -440,7 +440,7 @@ struct type * expr_typecheck( struct expr *e ){
 	} 
 	else if (e->kind == EXPR_INCREMENT) {
 		if(lt){
-			if(e->left->kind != EXPR_NAME){
+			if(e->left->kind != EXPR_NAME && e->left->kind != EXPR_SUBSCRIPT){
 				printf("type error: there is an attempt to increment an expression that is not a variable: ");
 				expr_print(e->left);
 				printf("\n");
@@ -456,7 +456,7 @@ struct type * expr_typecheck( struct expr *e ){
 			}
 		}
 		else if(rt){
-			if(e->right->kind != EXPR_NAME){
+			if(e->right->kind != EXPR_NAME && e->right->kind != EXPR_SUBSCRIPT){
 				printf("type error: there is an attempt to increment an expression that is not a variable: ");
 				expr_print(e->right);
 				printf("\n");
