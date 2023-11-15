@@ -362,7 +362,7 @@ struct type * expr_typecheck( struct expr *e ){
 		result = type_copy(rt);
 	} 
 	else if (e->kind == EXPR_ARRAY_DECL) {
-		result = type_create(TYPE_ARRAY, lt, 0, 0, 0);
+		result = type_create(TYPE_ARRAY, type_copy(lt), 0, 0, 0);
 	} 
 	else if (e->kind == EXPR_ARG) {
 		result = type_copy(lt);
@@ -496,13 +496,20 @@ struct type * expr_typecheck( struct expr *e ){
 		result = type_copy(rt);
 	}
 	else if (e->kind == EXPR_POWER || e->kind == EXPR_ADD || e->kind == EXPR_DIV || e->kind == EXPR_MUL || e->kind == EXPR_SUB) {
-		if(rt->kind == TYPE_FLOAT && (lt->kind == TYPE_INTEGER || lt->kind == TYPE_FLOAT))
+		if(rt->kind == TYPE_FLOAT && lt->kind == TYPE_FLOAT)
 			result = type_create(TYPE_FLOAT, 0, 0, 0, 0);
 		else if(rt->kind == TYPE_INTEGER && lt->kind == TYPE_INTEGER)
 			result = type_create(TYPE_INTEGER, 0, 0, 0, 0);
-		else if (rt->kind == TYPE_INTEGER && lt->kind == TYPE_FLOAT)
-			result = type_create(TYPE_FLOAT, 0, 0, 0, 0);
 		else{
+			printf("type error: cannot perform expon/add/sub/div/mul on ");
+			expr_print(e->left);
+			printf(" of type ");
+			type_print(lt);
+			printf("with ");
+			expr_print(e->right);
+			printf(" of type ");
+			type_print(rt);
+			printf("\n");
 			
 			typecheck_result = 0;
 			result = type_create(TYPE_INTEGER, 0, 0, 0, 0);
