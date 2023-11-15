@@ -1,5 +1,8 @@
+f: function void ();
+
+main: function void();
+
 main: function void () = {
-    { {
-        x: void = x;
-    } }
+    f(main());
 }
+

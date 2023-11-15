@@ -1,10 +1,7 @@
-/*
-main: function integer();
-main: function char();
-*/
-main: function integer() = {
-    return 0;
-    main();
+
+x:integer=0;
+
+func: function void () = {
+    x:boolean = true;
+    if (x) print x;
 }
-main: function string();
-//main: function void() = {main;}

@@ -1,3 +1,10 @@
-// cannot declare as prototype non-prototype
-main: function void ();
-main: void;
+/*
+main: function integer();
+main: function char();
+*/
+main: function integer() = {
+    return true;
+    main();
+}
+
+//main: function void() = {main;}

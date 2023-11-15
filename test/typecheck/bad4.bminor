@@ -1,3 +1,10 @@
-main: function void () = {
-    x: void = x;
+x: integer;
+
+main: function integer() = {
+    x: integer = x;
+    print x;
+    {
+        x: integer = 2.8;
+        print x;
+    }
 }

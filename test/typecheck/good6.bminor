@@ -1,4 +1,5 @@
-// resolver allows recursion
-main: function void () = {
-    main();
+
+
+main: function integer () = {
+    return 5;
 }

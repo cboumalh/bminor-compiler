@@ -1,4 +1,8 @@
-// cannot define two bodies for same function
-main: function void () = { print "hello"; }
+main: function integer(main: function integer ());
 
-main: function function void () () = { print "hello"; }
+main: function integer(main: function integer ()) = {
+    // should resolve to param 0
+    main();
+}
+
+
