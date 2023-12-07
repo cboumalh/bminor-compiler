@@ -80,5 +80,5 @@ test: $(EXEC)
 	sh runtest.sh
 
 clean:
-	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out ./test/printer/*.out ./test/resolve/*.out ./test/typecheck/*.out
+	rm -f *.o $(EXEC) $(LEX).c $(PARSER).tab.* $(PARSER).output ./test/encode/*.out ./test/scanner/*.out ./test/parser/*.out ./test/printer/*.out ./test/resolve/*.out ./test/typecheck/*.out ./test/codegen/*.s
 

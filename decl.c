@@ -212,96 +212,110 @@ void decl_codegen_array(struct decl *d, FILE *out, int g) {
         e = d->value;
         e = e->left;
     }
-            
-    while(e){
-        fprintf(out, "\t.quad %d\n", e->left->literal_value);
-        e = e->right;
+    if(d->type->size){
+        for (int i = 0; i < d->type->size->literal_value; i++) {
+            if(e){
+                fprintf(out, "\t.quad %d\n", e->left->literal_value);
+                e = e->right;
+            }
+            else{
+                fprintf(out, "\t.quad %d\n", 0);
+            }
+        }
+    }
+    else{ 
+        while(e){
+            fprintf(out, "\t.quad %d\n", e->left->literal_value);
+            e = e->right;
+        }
     }
 }
 
 void decl_codegen(struct decl *d, FILE *out) {
     if(!d) return;
     
-    // Global decls
-    if(d->symbol->kind == SYMBOL_GLOBAL) {
-        
-        switch (d->symbol->type->kind) {
-            case TYPE_FUNCTION: 
-                if(d->code) {
-                    // first to make declaring a bunch in a row
-                    First_global = 1;
-                    fprintf(out, ".text\n");
-                    fprintf(out, ".global %s\n", d->name);
-                    fprintf(out, "%s:\n", d->name);
-                    decl_prologue(d, out);
-                    stmt_codegen(d->code, d, out);
-                    decl_epilogue(d, out);
-                }
-                break;
-        
-            case TYPE_INTEGER:
-            case TYPE_BOOLEAN:
-                if(First_global) {
-                    fprintf(out, ".data\n");
-                    First_global = 0;
-                }
-                fprintf(out, ".global %s\n", d->name);
-                fprintf(out, "%s:\n\t.quad %d\n", d->name, d->value ? d->value->literal_value : 0);
-                break;
-            case TYPE_STRING:
-                if(First_global) {
-                    fprintf(out, ".data\n");
-                    First_global = 0;
-                }
-                fprintf(out, ".global %s\n", d->name);
-                if(d->value) {
-                    int l = scratch_label_create(LABEL_STRING);
-                    fprintf(out, "%s:\n\t.quad %s\n", d->name, scratch_label_name(l, LABEL_STRING));
-                    fprintf(out, "%s:\n\t.string %s\n", scratch_label_name(l, LABEL_STRING), d->value->string_literal);
-                }
-                break;
-            case TYPE_CHARACTER: 
-                if(First_global) {
-                    fprintf(out, ".data\n");
-                    First_global = 0;
-                }
-                fprintf(out, ".global %s\n", d->name);
-                fprintf(out, "%s:\n\t.quad %d\n", d->name, d->value ? *(d->value->string_literal+1) : 'a');
-                break;
-            case TYPE_ARRAY:
-                if(First_global) {
-                    fprintf(out, ".data\n");
-                    First_global = 0;
-                }
-                fprintf(out, ".global %s\n", d->name);
-                decl_codegen_array(d, out, 1);
-                break;
-            default:
-                break;
-        }
     
+    if(d->name){
+        if(d->symbol->kind == SYMBOL_GLOBAL) {
+            
+            switch (d->symbol->type->kind) {
+                case TYPE_FUNCTION: 
+                    if(d->code) {
+                        // first to make declaring a bunch in a row
+                        First_global = 1;
+                        fprintf(out, ".text\n");
+                        fprintf(out, ".global %s\n", d->name);
+                        fprintf(out, "%s:\n", d->name);
+                        decl_prologue(d, out);
+                        stmt_codegen(d->code, d, out);
+                        decl_epilogue(d, out);
+                    }
+                    break;
+            
+                case TYPE_INTEGER:
+                case TYPE_BOOLEAN:
+                    if(First_global) {
+                        fprintf(out, ".data\n");
+                        First_global = 0;
+                    }
+                    fprintf(out, ".global %s\n", d->name);
+                    fprintf(out, "%s:\n\t.quad %d\n", d->name, d->value ? d->value->literal_value : 0);
+                    break;
+                case TYPE_STRING:
+                    if(First_global) {
+                        fprintf(out, ".data\n");
+                        First_global = 0;
+                    }
+                    fprintf(out, ".global %s\n", d->name);
+                    if(d->value) {
+                        int l = scratch_label_create(LABEL_STRING);
+                        fprintf(out, "%s:\n\t.quad %s\n", d->name, scratch_label_name(l, LABEL_STRING));
+                        fprintf(out, "%s:\n\t.string %s\n", scratch_label_name(l, LABEL_STRING), d->value->string_literal);
+                    }
+                    break;
+                case TYPE_CHARACTER: 
+                    if(First_global) {
+                        fprintf(out, ".data\n");
+                        First_global = 0;
+                    }
+                    fprintf(out, ".global %s\n", d->name);
+                    fprintf(out, "%s:\n\t.quad %d\n", d->name, d->value ? *(d->value->string_literal+1) : 'a');
+                    break;
+                case TYPE_ARRAY:
+                    if(First_global) {
+                        fprintf(out, ".data\n");
+                        First_global = 0;
+                    }
+                    fprintf(out, ".global %s\n", d->name);
+                    decl_codegen_array(d, out, 1);
+                    break;
+                default:
+                    break;
+            }
+        
 
-    // Local decls
-    } else {
-        int l1, r1;
-        switch (d->symbol->type->kind) {
-            case TYPE_CHARACTER:
-            case TYPE_STRING:
-            case TYPE_BOOLEAN:
-            case TYPE_INTEGER:
-                if(d->value) {
-                    fprintf(out, "# generating code for value of decl %s\n", d->name);
-                    expr_codegen(d->value, out);
-                    fprintf(out, "# generating code for decl %s\n", d->name);
-                    fprintf(out, "\tmovq %%%s, %s\n", 
-                            scratch_reg_name(d->value->reg), 
-                            symbol_codegen(d->symbol));
-                    scratch_reg_free(d->value->reg);
+        // Local decls
+        } else {
+            int l1, r1;
+            switch (d->symbol->type->kind) {
+                case TYPE_CHARACTER:
+                case TYPE_STRING:
+                case TYPE_BOOLEAN:
+                case TYPE_INTEGER:
+                    if(d->value) {
+                        fprintf(out, "# generating code for value of decl %s\n", d->name);
+                        expr_codegen(d->value, out);
+                        fprintf(out, "# generating code for decl %s\n", d->name);
+                        fprintf(out, "\tmovq %%%s, %s\n", 
+                                scratch_reg_name(d->value->reg), 
+                                symbol_codegen(d->symbol));
+                        scratch_reg_free(d->value->reg);
 
-                }
-                break; 
-            default:
-                break;
+                    }
+                    break; 
+                default:
+                    break;
+            }
         }
     }
 

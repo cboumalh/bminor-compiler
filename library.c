@@ -26,6 +26,7 @@ x = integer_power(a,b);
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 void print_integer( long x )
 {
@@ -57,3 +58,12 @@ long integer_power( long x, long y )
 	return result;
 }
 
+long string_compare ( const char *s1, const char *s2 ) {
+
+    // if equal, return 1
+    if (strcmp(s1, s2) != 0) {
+        return 0;
+    } else {
+        return 1;
+    }
+}

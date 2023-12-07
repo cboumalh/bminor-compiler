@@ -854,29 +854,26 @@ void expr_codegen(struct expr *e, FILE *out) {
 			e->reg = e->left->reg;
 			break;
         case EXPR_SUBSCRIPT:
-            fprintf(out, " # indexing array\n");
-            expr_codegen(e->left, out);
-            expr_codegen(e->right, out);
+			if(!e->left) expr_codegen(e->right, out);
+			else{
+				fprintf(out, " # indexing array\n");
+				e->left->reg = scratch_reg_alloc();
+				expr_codegen(e->right, out);
+				e->reg = e->left->reg;
 
-			e->reg = e->left->reg;
 
-			if(e->left && e->left->symbol){
 				fprintf(out, "\tleaq %s, %%%s\n", symbol_codegen(e->left->symbol), scratch_reg_name(e->reg));
 				fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->right->reg));
 				scratch_reg_free(e->right->reg);
-			}
-			else{
-				fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->right->reg));
-				scratch_reg_free(e->right->reg);
-			}
 
-            int ri = scratch_reg_alloc();
-            fprintf(out, "\tmovq $8, %%%s\n", scratch_reg_name(ri));
-            fprintf(out, "\timulq %%%s\n", scratch_reg_name(ri));
-            scratch_reg_free(ri);
+				int ri = scratch_reg_alloc();
+				fprintf(out, "\tmovq $8, %%%s\n", scratch_reg_name(ri));
+				fprintf(out, "\timulq %%%s\n", scratch_reg_name(ri));
+				scratch_reg_free(ri);
 
-            fprintf(out, "\taddq %%%s, %%rax\n", scratch_reg_name(e->reg));
-            fprintf(out, "\tmovq (%%rax), %%%s\n", scratch_reg_name(e->reg));
+				fprintf(out, "\taddq %%%s, %%rax\n", scratch_reg_name(e->reg));
+				fprintf(out, "\tmovq (%%rax), %%%s\n", scratch_reg_name(e->reg));
+			}
             break;
 		case EXPR_ARRAY_DECL:
 			expr_codegen(e->left, out);
@@ -983,34 +980,37 @@ void expr_codegen(struct expr *e, FILE *out) {
                     scratch_reg_name(e->left->reg));
                 scratch_reg_free(e->left->reg);
             } else if (e->left->kind == EXPR_SUBSCRIPT) {
+				struct expr *subs = e->left;
+				if(!subs->left) subs = subs->right;
+
                 fprintf(out, "# generating code for array =\n");
 
                 // value to assign to
-                expr_codegen(e->left->left, out);
-                expr_codegen(e->left->right, out);
+                expr_codegen(subs->right, out);
+				subs->left->reg = scratch_reg_alloc();
 
                 // value to assign
                 expr_codegen(e->right, out);
                 e->reg = e->right->reg;
 
                 // address
-                fprintf(out, "\tleaq %s, %%%s\n", symbol_codegen(e->left->left->symbol), scratch_reg_name(e->left->left->reg));
+                fprintf(out, "\tleaq %s, %%%s\n", symbol_codegen(subs->left->symbol), scratch_reg_name(subs->left->reg));
 
                 // index
-                fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->left->right->reg));
+                fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(subs->right->reg));
 
                 int ri = scratch_reg_alloc();
                 fprintf(out, "\tmovq $8, %%%s\n", scratch_reg_name(ri));
                 fprintf(out, "\timulq %%%s\n", scratch_reg_name(ri));
 
                 // load back
-                fprintf(out, "\taddq %%%s, %%rax\n", scratch_reg_name(e->left->left->reg));
+                fprintf(out, "\taddq %%%s, %%rax\n", scratch_reg_name(subs->left->reg));
                 fprintf(out, "\tmovq %%%s, (%%rax)\n", scratch_reg_name(e->right->reg));
                 
                 // free
                 scratch_reg_free(ri);
-                scratch_reg_free(e->left->right->reg);
-                scratch_reg_free(e->left->left->reg);
+                scratch_reg_free(subs->right->reg);
+                scratch_reg_free(subs->left->reg);
             }
             break;
 

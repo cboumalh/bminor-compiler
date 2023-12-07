@@ -135,3 +135,15 @@ do
 		echo "$testfile failure (as expected)"
 	fi
 done
+
+
+#codegen
+for testfile in ./test/codegen/good*.bminor
+do
+	if ./bminor --codegen $testfile "${testfile%.bminor}.s"
+	then
+		echo "$testfile success (as expected)"
+	else
+		echo "$testfile failure (INCORRECT)"
+	fi
+done
