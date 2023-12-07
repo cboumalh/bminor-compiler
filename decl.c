@@ -163,6 +163,11 @@ void decl_prologue(struct decl *d, FILE *out) {
     fprintf(out, "\tmovq %%rsp, %%rbp\n");
 
     // save params
+    if(d->num_params > 6){
+        printf("codegen error: more than 6 parameters not supported\n");
+        exit(EXIT_FAILURE);
+    }
+    
     for(int i = 0; i < d->num_params; i++) {
         fprintf(out, "\tpushq %%%s\n", Arg_regs[i]);
     }
@@ -206,6 +211,11 @@ void decl_epilogue(struct decl *d, FILE *out) {
 }
 
 void decl_codegen_array(struct decl *d, FILE *out, int g) {
+    if(d->type->subtype->kind == TYPE_ARRAY){
+        printf("codegen error: multidimensional array not supported\n");
+        exit(EXIT_FAILURE);
+    }
+
     if(g) fprintf(out, "%s:\n", d->name);
     struct expr *e = 0;
     if(d->value){
