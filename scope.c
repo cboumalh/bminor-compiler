@@ -32,10 +32,10 @@ struct symbol *scope_bind(const char *name, struct symbol *sym){
             sym->which = 0;
             break;
         case SYMBOL_LOCAL:
-            sym->which = sc->locals++;
+            sym->which = ++sc->locals;
             break;
         case SYMBOL_PARAM:
-            sym->which = sc->params++;
+            sym->which = ++sc->params;
             break;
         default:
             break;

@@ -53,3 +53,19 @@ struct symbol * symbol_copy(struct symbol *sym){
 
     return cpy;
 }
+
+char *symbol_codegen(struct symbol *s) {
+    char str[MAX_SYMBOL_SIZE];
+    switch (s->kind) {
+        case SYMBOL_GLOBAL:
+            return s->name;
+        case SYMBOL_PARAM:
+            sprintf(str, "%d(%%rbp)", -8 * s->which);
+            return strdup(str);
+        case SYMBOL_LOCAL:
+            sprintf(str, "%d(%%rbp)", -8 * s->which);
+            return strdup(str);
+        default:
+            return 0;
+    }
+}

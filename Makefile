@@ -1,6 +1,6 @@
 CMP = gcc
 FL = flex
-CFLAGS = -Wall -lm -g
+CFLAGS = -Wall -lm -g -Wno-switch -Wno-switch-enum -Wno-unused-variable
 ENCODE = encode
 UTIL = utils
 MAIN = bminor
@@ -23,11 +23,12 @@ SYMBOL = symbol
 SCOPE = scope
 TABLE = hash_table
 TYPECHECK_UTIL = typecheck_utils
+SCRATCH = scratch
 
 all: $(PARSER).tab.c $(LEX).c $(EXEC) 
 
-$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o
-	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o
+$(EXEC): $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o $(SCRATCH).o
+	$(CMP) $(CFLAGS) -o $(EXEC) $(MAIN).o $(UTIL).o $(ENCODE).o $(EXPR).o $(TYPE).o $(PARAM_LIST).o $(STMT).o $(DECL).o $(EXPR_UTIL).o $(SYMBOL).o $(SCOPE).o $(TABLE).o $(SCRATCH).o
 
 $(LEX).c: $(SCANNER).l $(PARSER).tab.h
 	$(FL) $(SCANNER).l
@@ -70,6 +71,9 @@ $(SCOPE).o: $(SCOPE).c $(SCOPE).h
 
 $(TABLE).o: $(TABLE).c $(TABLE).h
 	$(CMP) $(CFLAGS) -c $(TABLE).c -o $(TABLE).o
+
+$(SCRATCH).o: $(SCRATCH).c $(SCRATCH).h
+	$(CMP) $(CFLAGS) -c $(SCRATCH).c -o $(SCRATCH).o
 
 
 test: $(EXEC)

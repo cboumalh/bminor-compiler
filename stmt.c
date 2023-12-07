@@ -268,3 +268,175 @@ void stmt_typecheck(struct stmt *s, struct type *decl_type){
 
     stmt_typecheck(s->next, decl_type);
 }
+
+void stmt_print_codegen(struct stmt *s, struct decl *d, FILE *out) {
+    struct expr *curr = s->expr;
+    struct type *t;
+    fprintf(out, "# printing exprs\n");
+    while(curr) {
+        t = expr_typecheck(curr);
+        fprintf(out, "\tpushq %%r10\n");
+        fprintf(out, "\tpushq %%r11\n");
+        expr_codegen(curr, out);
+        fprintf(out, "\tmovq %%%s, %%rdi\n", scratch_reg_name(curr->reg));
+        switch (t->kind) {
+            case TYPE_INTEGER:                
+                fprintf(out, "\tcall print_integer\n");
+                break;
+            case TYPE_STRING:
+                fprintf(out, "\tcall print_string\n");
+                break;
+            case TYPE_CHARACTER:
+                fprintf(out, "\tcall print_character\n");
+                break;
+            case TYPE_BOOLEAN:
+                fprintf(out, "\tcall print_boolean\n");
+                break;
+        }
+        fprintf(out, "\tpopq %%r11\n");
+        fprintf(out, "\tpopq %%r10\n");
+
+        scratch_reg_free(curr->left->reg);
+        curr = curr->right;
+    }
+}
+
+void stmt_while_codegen(struct stmt *s, struct decl *d, FILE *out) {
+    fprintf(out, "#generating code for while loop\n");
+
+    // top and done labels
+    int top = scratch_label_create(LABEL_JUMP);
+    int done = scratch_label_create(LABEL_JUMP);
+    fprintf(out, "%s:\n", scratch_label_name(top, LABEL_JUMP));
+
+    // expr
+    fprintf(out, "# condition expr\n");
+    expr_codegen(s->expr, out);
+    fprintf(out, "\tcmpq $0, %%%s\n", scratch_reg_name(s->expr->reg));
+    fprintf(out, "\tje %s\n", scratch_label_name(done, LABEL_JUMP));
+    
+    // body
+    fprintf(out, "# while body\n");
+    stmt_codegen(s->body, d, out);
+
+    // jmp top
+    fprintf(out, "\tjmp %s\n", scratch_label_name(top, LABEL_JUMP));
+
+    // done label
+    fprintf(out, "%s:\n", scratch_label_name(done, LABEL_JUMP));
+    
+    scratch_reg_free(s->expr->reg);
+}
+
+void stmt_for_codegen(struct stmt *s, struct decl *d, FILE *out) {
+    fprintf(out, "# generating code for loop\n");
+
+    // init expr
+    fprintf(out, "# init expr\n");
+    expr_codegen(s->init_expr, out);
+
+
+    // top and done label
+    int top = scratch_label_create(LABEL_JUMP);
+    int done = scratch_label_create(LABEL_JUMP);
+    fprintf(out, "%s:\n", scratch_label_name(top, LABEL_JUMP));
+
+    // expr
+    fprintf(out, "# condition expr\n");
+    expr_codegen(s->expr, out);
+    if(s->expr) fprintf(out, "\tcmpq $0, %%%s\n", scratch_reg_name(s->expr->reg));
+    if(s->expr) fprintf(out, "\tje %s\n", scratch_label_name(done, LABEL_JUMP));
+    
+
+    // body
+    fprintf(out, "# for body\n");
+    stmt_codegen(s->body, d, out);
+
+    // next expr
+    fprintf(out, "# next expr\n");
+    expr_codegen(s->next_expr, out);
+
+    // jmp top
+    fprintf(out, "\tjmp %s\n", scratch_label_name(top, LABEL_JUMP));
+
+    // done label
+    fprintf(out, "%s:\n", scratch_label_name(done, LABEL_JUMP));
+
+    if(s->init_expr) scratch_reg_free(s->init_expr->reg);
+    if(s->expr) scratch_reg_free(s->expr->reg);
+    if(s->next_expr) scratch_reg_free(s->next_expr->reg);
+}    
+
+void stmt_if_codegen(struct stmt *s, struct decl *d, FILE *out) {
+    fprintf(out, "# generating code for if stmt\n");
+
+    // l1: false; l2: done
+    int l1 = scratch_label_create(LABEL_JUMP);
+    int l2 = scratch_label_create(LABEL_JUMP);;
+    
+    // expr cond
+    fprintf(out, "# condition expr\n");
+    expr_codegen(s->expr, out);
+
+    
+    fprintf(out, "\tcmpq $0, %%%s\n", scratch_reg_name(s->expr->reg));
+    fprintf(out, "\tje %s\n", scratch_label_name(l1, LABEL_JUMP));
+    
+    // if body
+    stmt_codegen(s->body, d, out);
+    fprintf(out, "\tjmp %s\n", scratch_label_name(l2, LABEL_JUMP));
+
+    // false label
+    fprintf(out, "%s:\n", scratch_label_name(l1, LABEL_JUMP));
+
+    // else body
+    stmt_codegen(s->else_body, d, out);
+
+    // done label
+    fprintf(out, "%s:\n", scratch_label_name(l2, LABEL_JUMP));
+
+    scratch_reg_free(s->expr->reg);
+}
+
+
+void stmt_codegen(struct stmt *s, struct decl *d, FILE *out) {
+    if(!s) return;
+    
+     switch(s->kind) {
+        case STMT_BLOCK:
+            stmt_codegen(s->body, d, out);
+            break;
+        case STMT_EXPR:
+            s->expr->func_value = 1;
+            expr_codegen(s->expr, out);
+            scratch_reg_free(s->expr->reg);
+            break;    
+        case STMT_RETURN:
+            fprintf(out, "# generating code for return\n");
+            expr_codegen(s->expr, out);
+            fprintf(out, "# generating code for return\n");
+            if(s->expr) fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(s->expr->reg));
+            fprintf(out, "\tjmp .%s_epilogue\n", d->name);
+            if(s->expr) scratch_reg_free(s->expr->reg);
+            break;
+        case STMT_DECL:
+            decl_codegen(s->decl, out);              
+            break;
+        case STMT_IF_ELSE:
+            stmt_if_codegen(s, d, out);
+            break;
+        case STMT_WHILE:
+            stmt_while_codegen(s, d, out);
+            break;
+        case STMT_PRINT:
+            stmt_print_codegen(s, d, out);
+            break;
+        case STMT_FOR:
+            stmt_for_codegen(s, d, out);
+            break;
+        default:
+            break;
+    }
+
+    stmt_codegen(s->next, d, out);
+}

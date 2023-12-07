@@ -8,6 +8,7 @@
 #include "type.h"
 #include "expr_utils.h"
 #include "scope.h"
+#include "scratch.h"
 #include "param_list.h"
 
 
@@ -59,6 +60,9 @@ struct expr {
 	float literal_float_value;
 	const char * string_literal;
 	struct symbol *symbol;
+	int reg;
+	int label;
+	int func_value;              
 };
 
 struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right );
@@ -74,5 +78,6 @@ struct type * expr_typecheck( struct expr *e );
 void expr_print( struct expr *e );
 struct expr * expr_copy(struct expr *e);
 void expr_delete(struct expr *e);
+void expr_codegen( struct expr *, FILE *);
 
 #endif

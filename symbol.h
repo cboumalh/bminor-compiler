@@ -2,6 +2,7 @@
 #define SYMBOL_H
 
 #include "type.h"
+#include "scratch.h"
 
 typedef enum {
 	SYMBOL_LOCAL,
@@ -24,5 +25,7 @@ void symbol_print(struct symbol *sym);
 struct symbol * symbol_copy(struct symbol *sym);
 
 void symbol_delete(struct symbol *sym);
+
+char *symbol_codegen( struct symbol *s );
 
 #endif

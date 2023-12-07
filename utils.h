@@ -17,7 +17,8 @@ enum Flags {
     PARSE_FLAG = 1 << 2,
     PRINT_FLAG = 1 << 3,
     RESOLVE_FLAG =  1 << 4,
-    TYPECHECK_FLAG =  1 << 5
+    TYPECHECK_FLAG =  1 << 5,
+    CODEGEN_FLAG = 1 << 6
 };
 
 

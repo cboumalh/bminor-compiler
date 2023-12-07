@@ -4,6 +4,7 @@
 
 #include "decl.h"
 #include "utils.h"
+#include "scratch.h"
 
 typedef enum {
 	STMT_DECL,
@@ -35,6 +36,7 @@ struct stmt * stmt_create( stmt_t kind, struct decl *decl, struct expr *init_exp
 void stmt_print( struct stmt *s, int indent );
 void stmt_resolve(struct stmt *s, int verbose);
 void stmt_typecheck( struct stmt *s, struct type * decl_type);
+void stmt_codegen( struct stmt *s, struct decl *d, FILE *out );
 
 
 

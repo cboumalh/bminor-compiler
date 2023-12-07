@@ -11,6 +11,7 @@ struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right ){
 	e->kind = kind;
 	e->left = left;
 	e->right = right;
+	e->func_value = 0;
 
 	return e;
 }
@@ -671,4 +672,450 @@ void expr_delete(struct expr *e){
 	symbol_delete(e->symbol);
 	
 	free(e);
+}
+
+void expr_func_codegen(struct expr *e, FILE *out) {
+    extern char *Arg_regs[6];
+    struct expr *curr = e->right;
+    int count = 0;
+
+    // save responible regs
+    fprintf(out, "# save regs for func call\n");
+    fprintf(out, "\tpushq %%r10\n");
+    fprintf(out, "\tpushq %%r11\n");
+
+    // put args in temps
+    fprintf(out, "# putting args in temps\n");
+    while(curr) {
+        expr_codegen(curr, out);
+        curr = curr->right;
+    }
+
+    // put args in arg regs
+    curr = e->right;
+    fprintf(out, "# load args into arg registers\n");
+    while(curr) {
+        fprintf(out, "\tmovq %%%s, %%%s\n", 
+                scratch_reg_name(curr->left->reg), 
+                Arg_regs[count]);
+        scratch_reg_free(curr->left->reg);
+        count++;
+        curr = curr->right;
+    }
+
+    // call func
+    fprintf(out, "# call function\n");
+    fprintf(out, "\tcall %s\n", e->left->name);
+
+    // restore regs
+    fprintf(out, "# restore regs after func call\n");
+    fprintf(out, "\tpopq %%r11\n");
+    fprintf(out, "\tpopq %%r10\n");
+
+    // put result in rax?
+    // e->func_value
+    if(e->left->symbol->type->subtype->kind != TYPE_VOID) {
+        fprintf(out, "# load return into scratch reg\n");
+        e->reg = scratch_reg_alloc();
+        fprintf(out, "\tmovq %%rax, %%%s\n", scratch_reg_name(e->reg));
+    }
+        
+}
+
+void expr_cmp_codegen(struct expr *e, FILE *out) {
+    
+    int l1, l2, l3;
+    fprintf(out, "# generating code for cmp\n");
+    expr_codegen(e->left, out);
+    expr_codegen(e->right, out);
+    e->reg = e->right->reg;
+    fprintf(out, "# doing the cmp\n");
+
+    if(e->left && e->left->symbol && e->left->symbol->type->kind == TYPE_STRING) { 
+        fprintf(out, "\tpushq %%r10\n");
+        fprintf(out, "\tpushq %%r11\n");
+        fprintf(out, "\tmovq %%%s, %%rdi\n", scratch_reg_name(e->left->reg));
+        fprintf(out, "\tmovq %%%s, %%rsi\n", scratch_reg_name(e->right->reg));
+        fprintf(out, "\tcall string_compare\n");
+        fprintf(out, "\tpopq %%r11\n");
+        fprintf(out, "\tpopq %%r10\n");
+        fprintf(out, "\tcmpq $1, %%rax\n"); 
+    } else {
+        fprintf(out, "\tcmpq %%%s, %%%s\n", scratch_reg_name(e->right->reg), scratch_reg_name(e->left->reg));
+    }
+    // l1: if true label
+    // l2: if false label
+    // l3: continue label
+    l1 = scratch_label_create(LABEL_JUMP);
+    e->label = l1;
+
+    switch (e->kind) {
+        case EXPR_LESS:
+            fprintf(out, "\tjl %s\n", scratch_label_name(l1, LABEL_JUMP));
+            break;
+        case EXPR_LESS_OR_EQ:
+            fprintf(out, "\tjle %s\n", scratch_label_name(l1, LABEL_JUMP));
+            break;
+        case EXPR_GREATER:
+            fprintf(out, "\tjg %s\n", scratch_label_name(l1, LABEL_JUMP));
+            break;
+        case EXPR_GREATER_OR_EQ:
+            fprintf(out, "\tjge %s\n", scratch_label_name(l1, LABEL_JUMP));
+            break;
+        case EXPR_EQ:
+            fprintf(out, "\tje %s\n", scratch_label_name(l1, LABEL_JUMP));
+            break;
+        case EXPR_NOT_EQUAL:
+            fprintf(out, "\tjne %s\n", scratch_label_name(l1, LABEL_JUMP));
+            break;
+    }
+   
+
+    l2 = scratch_label_create(LABEL_JUMP);
+    l3 = scratch_label_create(LABEL_JUMP);
+    // false
+    fprintf(out, " # if false\n");
+    fprintf(out, "%s:\n\tmovq $0, %%%s\n\tjmp %s\n", 
+        scratch_label_name(l2, LABEL_JUMP), 
+        scratch_reg_name(e->reg),
+        scratch_label_name(l3, LABEL_JUMP));
+            
+    // true
+    fprintf(out, " # if true\n");
+    fprintf(out, "%s:\n\tmovq $1, %%%s\n\tjmp %s\n", 
+        scratch_label_name(l1, LABEL_JUMP), 
+        scratch_reg_name(e->reg),
+        scratch_label_name(l3, LABEL_JUMP));
+
+    // cont
+    fprintf(out, " # continue\n");
+    fprintf(out, "%s:\n", scratch_label_name(l3, LABEL_JUMP));
+
+    scratch_reg_free(e->left->reg);
+}
+
+void expr_codegen(struct expr *e, FILE *out) {
+    if(!e) return;
+
+    int l1, l2, l3;
+    switch (e->kind) {
+        // literals
+        case EXPR_INTEGER_LITERAL:
+            e->reg = scratch_reg_alloc();
+            fprintf(out, "\tmovq $%d, %%%s\n", e->literal_value, scratch_reg_name(e->reg)); 
+            break;
+        case EXPR_BOOL_LITERAL:
+            e->reg = scratch_reg_alloc();
+            fprintf(out, "\tmovq $%d, %%%s\n", e->literal_value, scratch_reg_name(e->reg));
+            break;
+        case EXPR_NAME:
+            e->reg = scratch_reg_alloc();
+            fprintf(out, "\tmovq %s, %%%s\n", symbol_codegen(e->symbol), scratch_reg_name(e->reg));
+            break;
+        case EXPR_CHAR_LITERAL:
+            e->reg = scratch_reg_alloc();
+           
+            if(*(e->string_literal+1) != '\\') {
+                fprintf(out, "\tmovq $%d, %%%s\n", *(e->string_literal+1), scratch_reg_name(e->reg));
+            } else {
+                if(*(e->string_literal+2) == 'n')
+                    fprintf(out, "\tmovq $%d, %%%s\n", '\n', scratch_reg_name(e->reg));
+                else if(*(e->string_literal+2) == '\\')
+                    fprintf(out, "\tmovq $%d, %%%s\n", '\\', scratch_reg_name(e->reg));
+                else if(*(e->string_literal+2) == '0')
+                    fprintf(out, "\tmovq $%d, %%%s\n", '\0', scratch_reg_name(e->reg));
+                else
+                    fprintf(out, "\tmovq $%d, %%%s\n", *(e->string_literal+2), scratch_reg_name(e->reg));
+
+            }
+
+            break;
+        case EXPR_STRING_LITERAL:
+            l1 = scratch_label_create(LABEL_STRING);
+ 
+            // make new string lit
+            fprintf(out, ".data\n%s:\n\t.string %s\n.text\n", 
+                    scratch_label_name(l1, LABEL_STRING),
+                    e->string_literal);
+
+            // put address in reg
+            e->reg = scratch_reg_alloc();
+            fprintf(out, "\tleaq %s, %%%s\n", scratch_label_name(l1, LABEL_STRING), scratch_reg_name(e->reg));
+            break;
+        case EXPR_CALL:
+            expr_func_codegen(e, out);
+            break;
+        case EXPR_PARAN:
+            expr_codegen(e->right, out);
+			e->reg = e->right->reg;
+            break;
+		case EXPR_ARG:
+			expr_codegen(e->left, out);
+			e->reg = e->left->reg;
+			break;
+        case EXPR_SUBSCRIPT:
+            fprintf(out, " # indexing array\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+
+			e->reg = e->left->reg;
+
+			if(e->left && e->left->symbol){
+				fprintf(out, "\tleaq %s, %%%s\n", symbol_codegen(e->left->symbol), scratch_reg_name(e->reg));
+				fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->right->reg));
+				scratch_reg_free(e->right->reg);
+			}
+			else{
+				fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->right->reg));
+				scratch_reg_free(e->right->reg);
+			}
+
+            int ri = scratch_reg_alloc();
+            fprintf(out, "\tmovq $8, %%%s\n", scratch_reg_name(ri));
+            fprintf(out, "\timulq %%%s\n", scratch_reg_name(ri));
+            scratch_reg_free(ri);
+
+            fprintf(out, "\taddq %%%s, %%rax\n", scratch_reg_name(e->reg));
+            fprintf(out, "\tmovq (%%rax), %%%s\n", scratch_reg_name(e->reg));
+            break;
+		case EXPR_ARRAY_DECL:
+			expr_codegen(e->left, out);
+			expr_codegen(e->right, out);
+			e->reg = e->left->reg;
+            break;
+        case EXPR_ONE_D_ARR:
+            l1 = scratch_label_create(LABEL_ARRAY);
+
+            // make new array
+
+            fprintf(out, ".data\n%s:\n", scratch_label_name(l1, LABEL_ARRAY));
+            
+            struct expr *m = e->left;
+            while(m) {
+                fprintf(out, "\t.quad %d\n", m->left->literal_value);
+                m = m->right;
+            }
+
+            fprintf(out, ".text\n");
+            e->reg = scratch_reg_alloc();
+            fprintf(out, "\tleaq %s, %%%s\n", scratch_label_name(l1, LABEL_ARRAY), scratch_reg_name(e->reg));
+
+            break;
+
+        case EXPR_NOT:
+            l1 = scratch_label_create(LABEL_JUMP);
+            l2 = scratch_label_create(LABEL_JUMP);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, " # expr not\n");
+            fprintf(out, "\tcmpq $0, %%%s\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "\tje %s\n", scratch_label_name(l1, LABEL_JUMP));
+            fprintf(out, "\tmovq $0, %%%s\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "\tjmp %s\n", scratch_label_name(l2, LABEL_JUMP));
+            fprintf(out, "%s:\n", scratch_label_name(l1, LABEL_JUMP));
+            fprintf(out, "\tmovq $1, %%%s\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "%s:\n", scratch_label_name(l2, LABEL_JUMP));
+
+            break;
+        case EXPR_UNARY:
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, " # negating\n");
+            fprintf(out, "\tnegq %%%s\n", scratch_reg_name(e->right->reg));
+             break;
+
+        // only lt
+        case EXPR_INCREMENT:
+			if(!e->right){
+				fprintf(out, "# generating code for ++\n");
+				expr_codegen(e->left, out);
+				e->reg = scratch_reg_alloc();
+				fprintf(out, "\tmovq %%%s, %%%s\n", scratch_reg_name(e->left->reg), scratch_reg_name(e->reg));
+				fprintf(out, "\tincq %%%s\n", scratch_reg_name(e->left->reg));
+				fprintf(out, "\tmovq %%%s, %s\n", scratch_reg_name(e->left->reg), symbol_codegen(e->left->symbol));
+				scratch_reg_free(e->left->reg);
+			}
+			else{
+				fprintf(out, "# generating code for ++\n");
+				expr_codegen(e->right, out);
+				e->reg = scratch_reg_alloc();
+				fprintf(out, "\tmovq %%%s, %%%s\n", scratch_reg_name(e->right->reg), scratch_reg_name(e->reg));
+				fprintf(out, "\tincq %%%s\n", scratch_reg_name(e->right->reg));
+				fprintf(out, "\tmovq %%%s, %s\n", scratch_reg_name(e->right->reg), symbol_codegen(e->right->symbol));
+				scratch_reg_free(e->right->reg);
+			}
+             break;
+        case EXPR_DECREMENT:
+			if(!e->right){
+				fprintf(out, "# generating code for --\n");
+				expr_codegen(e->left, out);
+				e->reg = scratch_reg_alloc();
+				fprintf(out, "\tmovq %%%s, %%%s\n", scratch_reg_name(e->left->reg), scratch_reg_name(e->reg));
+				fprintf(out, "\tdecq %%%s\n", scratch_reg_name(e->left->reg));
+				fprintf(out, "\tmovq %%%s, %s\n", scratch_reg_name(e->left->reg), symbol_codegen(e->left->symbol));
+				scratch_reg_free(e->left->reg); 
+			}
+			else{
+				fprintf(out, "# generating code for --\n");
+				expr_codegen(e->right, out);
+				e->reg = scratch_reg_alloc();
+				fprintf(out, "\tmovq %%%s, %%%s\n", scratch_reg_name(e->right->reg), scratch_reg_name(e->reg));
+				fprintf(out, "\tdecq %%%s\n", scratch_reg_name(e->right->reg));
+				fprintf(out, "\tmovq %%%s, %s\n", scratch_reg_name(e->right->reg), symbol_codegen(e->right->symbol));
+				scratch_reg_free(e->right->reg); 
+			}
+			break;
+        case EXPR_ASSIGN:
+            if(e->left->kind == EXPR_NAME) {
+                fprintf(out, "# genterating code for ident =\n");
+                // value
+                expr_codegen(e->right, out);
+                e->reg = e->right->reg;
+                
+                // address
+                e->left->reg = scratch_reg_alloc();
+                fprintf(out, "\tleaq %s, %%%s\n", 
+                        symbol_codegen(e->left->symbol), 
+                        scratch_reg_name(e->left->reg));
+                fprintf(out, "# loading value\n");
+                fprintf(out, "\tmovq %%%s, (%%%s)\n", 
+                    scratch_reg_name(e->right->reg),
+                    scratch_reg_name(e->left->reg));
+                scratch_reg_free(e->left->reg);
+            } else if (e->left->kind == EXPR_SUBSCRIPT) {
+                fprintf(out, "# generating code for array =\n");
+
+                // value to assign to
+                expr_codegen(e->left->left, out);
+                expr_codegen(e->left->right, out);
+
+                // value to assign
+                expr_codegen(e->right, out);
+                e->reg = e->right->reg;
+
+                // address
+                fprintf(out, "\tleaq %s, %%%s\n", symbol_codegen(e->left->left->symbol), scratch_reg_name(e->left->left->reg));
+
+                // index
+                fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->left->right->reg));
+
+                int ri = scratch_reg_alloc();
+                fprintf(out, "\tmovq $8, %%%s\n", scratch_reg_name(ri));
+                fprintf(out, "\timulq %%%s\n", scratch_reg_name(ri));
+
+                // load back
+                fprintf(out, "\taddq %%%s, %%rax\n", scratch_reg_name(e->left->left->reg));
+                fprintf(out, "\tmovq %%%s, (%%rax)\n", scratch_reg_name(e->right->reg));
+                
+                // free
+                scratch_reg_free(ri);
+                scratch_reg_free(e->left->right->reg);
+                scratch_reg_free(e->left->left->reg);
+            }
+            break;
+
+        // only integers
+        case EXPR_ADD:
+            fprintf(out, "# generating code for add\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, "\taddq %%%s, %%%s\n",scratch_reg_name(e->left->reg), scratch_reg_name(e->right->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+        case EXPR_SUB:
+            fprintf(out, "# generating code for sub\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->left->reg;
+            fprintf(out, "\tsubq %%%s, %%%s\n",scratch_reg_name(e->right->reg), scratch_reg_name(e->left->reg));
+            scratch_reg_free(e->right->reg);           
+            break;
+        case EXPR_MUL:
+            fprintf(out, "# generating code for mult\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, "# doing the mult (rax)\n");
+            fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "\timulq %%%s\n", scratch_reg_name(e->left->reg));
+            fprintf(out, "\tmovq %%rax, %%%s\n", scratch_reg_name(e->right->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+        case EXPR_DIV:
+            fprintf(out, "# generating code for div\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, "# doing the div (rax)\n");
+            fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->left->reg));
+            fprintf(out, "\tcqo\n");
+            fprintf(out, "\tidivq %%%s\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "\tmovq %%rax, %%%s\n", scratch_reg_name(e->right->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+        case EXPR_MODULO:
+            fprintf(out, "# generating code for mod\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, "# doing the mod (rax)\n");
+            fprintf(out, "\tmovq %%%s, %%rax\n", scratch_reg_name(e->left->reg));
+            fprintf(out, "\tcqo\n");
+            fprintf(out, "\tidivq %%%s\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "\tmovq %%rdx, %%%s\n", scratch_reg_name(e->right->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+        case EXPR_POWER:
+            fprintf(out, "# generating code for pow\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            fprintf(out, "\tpushq %%r10\n");
+            fprintf(out, "\tpushq %%r11\n");
+            e->reg = e->right->reg;
+            fprintf(out, "\tmovq %%%s, %%rdi\n", scratch_reg_name(e->left->reg));
+            fprintf(out, "\tmovq %%%s, %%rsi\n", scratch_reg_name(e->right->reg));
+            fprintf(out, "\tcall integer_power\n");
+            fprintf(out, "\tpopq %%r11\n");
+            fprintf(out, "\tpopq %%r10\n");
+            fprintf(out, "\tmovq %%rax, %%%s\n", scratch_reg_name(e->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+
+        // logical
+        case EXPR_OR:
+            fprintf(out, "# generating code for or\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, "# doing the or\n");
+            fprintf(out, "\torq %%%s, %%%s\n", scratch_reg_name(e->left->reg), scratch_reg_name(e->right->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+
+        case EXPR_AND:
+            fprintf(out, "# generating code for and\n");
+            expr_codegen(e->left, out);
+            expr_codegen(e->right, out);
+            e->reg = e->right->reg;
+            fprintf(out, "# doing the or\n");
+            fprintf(out, "\tandq %%%s, %%%s\n", scratch_reg_name(e->left->reg), scratch_reg_name(e->right->reg));
+            scratch_reg_free(e->left->reg);
+            break;
+		case EXPR_PLUS:
+			expr_codegen(e->right, out);
+			e->reg = e->right->reg;
+			break;
+        // compare
+        case EXPR_LESS:
+        case EXPR_LESS_OR_EQ:
+        case EXPR_GREATER:
+        case EXPR_GREATER_OR_EQ:
+        case EXPR_EQ:
+        case EXPR_NOT_EQUAL:
+            expr_cmp_codegen(e, out);
+            break;
+    }
+ 
+    return;
 }

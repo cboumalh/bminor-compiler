@@ -2,6 +2,8 @@
 #include "resolve_result.h"
 #include "typecheck_result.h"
 
+int First_global = 1;
+
 
 struct decl * decl_create( char *name, struct type *type, struct expr *value, struct stmt *code, struct decl *next ){
     struct decl * d = calloc(1, sizeof(struct decl));
@@ -18,6 +20,11 @@ struct decl * decl_create( char *name, struct type *type, struct expr *value, st
     d->value = value;
     d->code = code;
     d->next = next;
+
+    d->num_params = 0;
+    d->num_locals = 0;
+    d->num_total = 0;
+    d->found_return = 0;
 
     return d;
 }
@@ -73,11 +80,14 @@ void decl_resolve(struct decl *d, int verbose){
         if(d->type->params){
             scope_enter();
             param_list_resolve(d->type->params, verbose);
+            d->num_params = sc->params;
         }
 
         if(d->code) {
             scope_enter();
             stmt_resolve(d->code, verbose);
+            d->num_locals = sc->locals;
+            d->num_total = d->num_params + d->num_locals;
             scope_exit();
         }
 
@@ -141,4 +151,159 @@ void decl_typecheck( struct decl *d ){
 
 
     decl_typecheck(d->next);
+}
+
+void decl_prologue(struct decl *d, FILE *out) {
+    extern char *Arg_regs[6];
+    extern bool Registers[7];
+
+    fprintf(out, "# Start of function prologue\n");
+    // setup framei
+    fprintf(out, "\tpushq %%rbp\n");
+    fprintf(out, "\tmovq %%rsp, %%rbp\n");
+
+    // save params
+    for(int i = 0; i < d->num_params; i++) {
+        fprintf(out, "\tpushq %%%s\n", Arg_regs[i]);
+    }
+
+    // allocate locals
+    if(d->num_locals) fprintf(out, "\tsubq $%d, %%rsp\n", (d->num_locals*8));
+
+    // save registers
+    if(strcmp(d->name, "man")) {
+        fprintf(out, "\tpushq %%rbx\n");
+        fprintf(out, "\tpushq %%r12\n");
+        fprintf(out, "\tpushq %%r13\n");
+        fprintf(out, "\tpushq %%r14\n");
+        fprintf(out, "\tpushq %%r15\n");
+    }
+    fprintf(out, "# End of functiop prologue\n");
+    
+}
+
+void decl_epilogue(struct decl *d, FILE *out) {
+    
+    fprintf(out, "# Start of function epilogue\n");
+    // restore registers
+    fprintf(out, ".%s_epilogue:\n", d->name);
+    
+    if(strcmp(d->name, "man")) {
+        fprintf(out, "\tpopq %%r15\n");
+        fprintf(out, "\tpopq %%r14\n");
+        fprintf(out, "\tpopq %%r13\n");
+        fprintf(out, "\tpopq %%r12\n");
+        fprintf(out, "\tpopq %%rbx\n");
+    }
+
+    // deallocate locals
+
+    // restore frame
+    fprintf(out, "\tmovq %%rbp, %%rsp\n");
+    fprintf(out, "\tpopq %%rbp\n");
+    fprintf(out, "\tret\n");
+    fprintf(out, "# End of function epilogue\n");
+}
+
+void decl_codegen_array(struct decl *d, FILE *out, int g) {
+    if(g) fprintf(out, "%s:\n", d->name);
+    struct expr *e = 0;
+    if(d->value){
+        e = d->value;
+        e = e->left;
+    }
+            
+    while(e){
+        fprintf(out, "\t.quad %d\n", e->left->literal_value);
+        e = e->right;
+    }
+}
+
+void decl_codegen(struct decl *d, FILE *out) {
+    if(!d) return;
+    
+    // Global decls
+    if(d->symbol->kind == SYMBOL_GLOBAL) {
+        
+        switch (d->symbol->type->kind) {
+            case TYPE_FUNCTION: 
+                if(d->code) {
+                    // first to make declaring a bunch in a row
+                    First_global = 1;
+                    fprintf(out, ".text\n");
+                    fprintf(out, ".global %s\n", d->name);
+                    fprintf(out, "%s:\n", d->name);
+                    decl_prologue(d, out);
+                    stmt_codegen(d->code, d, out);
+                    decl_epilogue(d, out);
+                }
+                break;
+        
+            case TYPE_INTEGER:
+            case TYPE_BOOLEAN:
+                if(First_global) {
+                    fprintf(out, ".data\n");
+                    First_global = 0;
+                }
+                fprintf(out, ".global %s\n", d->name);
+                fprintf(out, "%s:\n\t.quad %d\n", d->name, d->value ? d->value->literal_value : 0);
+                break;
+            case TYPE_STRING:
+                if(First_global) {
+                    fprintf(out, ".data\n");
+                    First_global = 0;
+                }
+                fprintf(out, ".global %s\n", d->name);
+                if(d->value) {
+                    int l = scratch_label_create(LABEL_STRING);
+                    fprintf(out, "%s:\n\t.quad %s\n", d->name, scratch_label_name(l, LABEL_STRING));
+                    fprintf(out, "%s:\n\t.string %s\n", scratch_label_name(l, LABEL_STRING), d->value->string_literal);
+                }
+                break;
+            case TYPE_CHARACTER: 
+                if(First_global) {
+                    fprintf(out, ".data\n");
+                    First_global = 0;
+                }
+                fprintf(out, ".global %s\n", d->name);
+                fprintf(out, "%s:\n\t.quad %d\n", d->name, d->value ? *(d->value->string_literal+1) : 'a');
+                break;
+            case TYPE_ARRAY:
+                if(First_global) {
+                    fprintf(out, ".data\n");
+                    First_global = 0;
+                }
+                fprintf(out, ".global %s\n", d->name);
+                decl_codegen_array(d, out, 1);
+                break;
+            default:
+                break;
+        }
+    
+
+    // Local decls
+    } else {
+        int l1, r1;
+        switch (d->symbol->type->kind) {
+            case TYPE_CHARACTER:
+            case TYPE_STRING:
+            case TYPE_BOOLEAN:
+            case TYPE_INTEGER:
+                if(d->value) {
+                    fprintf(out, "# generating code for value of decl %s\n", d->name);
+                    expr_codegen(d->value, out);
+                    fprintf(out, "# generating code for decl %s\n", d->name);
+                    fprintf(out, "\tmovq %%%s, %s\n", 
+                            scratch_reg_name(d->value->reg), 
+                            symbol_codegen(d->symbol));
+                    scratch_reg_free(d->value->reg);
+
+                }
+                break; 
+            default:
+                break;
+        }
+    }
+
+    decl_codegen(d->next, out);
 }
