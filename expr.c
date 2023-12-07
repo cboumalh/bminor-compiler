@@ -703,6 +703,11 @@ void expr_func_codegen(struct expr *e, FILE *out) {
         curr = curr->right;
     }
 
+	if(count > 6){
+		printf("codegen error: not enough registers\n");
+		exit(EXIT_FAILURE);
+	}
+
     // call func
     fprintf(out, "# call function\n");
     fprintf(out, "\tcall %s\n", e->left->name);
@@ -876,9 +881,8 @@ void expr_codegen(struct expr *e, FILE *out) {
 			}
             break;
 		case EXPR_ARRAY_DECL:
-			expr_codegen(e->left, out);
-			expr_codegen(e->right, out);
-			e->reg = e->left->reg;
+			printf("codegen error: multidimensional arrays not implemented\n");
+			exit(EXIT_FAILURE);
             break;
         case EXPR_ONE_D_ARR:
             l1 = scratch_label_create(LABEL_ARRAY);
@@ -1105,6 +1109,10 @@ void expr_codegen(struct expr *e, FILE *out) {
 		case EXPR_PLUS:
 			expr_codegen(e->right, out);
 			e->reg = e->right->reg;
+			break;
+		case EXPR_FLOAT_LITERAL:
+			printf("codegen error: floats not implemented\n");
+			exit(EXIT_FAILURE);
 			break;
         // compare
         case EXPR_LESS:
